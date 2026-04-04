@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Habitflow — Build discipline like a product</title>
+  <meta name="description" content="A premium monthly habit tracker for indie builders. Dark mode, animated insights, and a dashboard that feels like momentum." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="src/css/landing.css" />
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">Habitflow</a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="auth.html" class="nav-cta">Get started</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="grid-lines"></div>
+    </div>
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Indie Build · Made in India
+      </div>
+      <h1 class="hero-h1">
+        Build discipline<br/>
+        <em>like a product.</em>
+      </h1>
+      <p class="hero-sub">
+        A cinematic monthly command center for creators who want visible momentum —
+        not another spreadsheet gathering dust.
+      </p>
+      <div class="hero-actions">
+        <a href="auth.html" class="btn-primary">Start tracking free</a>
+        <a href="#features" class="btn-ghost">See how it works</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><strong>12</strong><span>Habit slots</span></div>
+        <div class="stat-div"></div>
+        <div class="stat"><strong>∞</strong><span>Month history</span></div>
+        <div class="stat-div"></div>
+        <div class="stat"><strong>0</strong><span>Spreadsheets needed</span></div>
+      </div>
+    </div>
+
+    <div class="hero-preview">
+      <div class="preview-window">
+        <div class="window-bar">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="window-title">Habitflow Dashboard · April 2026</span>
+        </div>
+        <div class="window-body">
+          <div class="preview-cal">
+            <div class="pcal-head">
+              <span>Habits</span>
+              <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+            </div>
+            <div class="pcal-rows" id="previewRows"></div>
+          </div>
+          <div class="preview-chart">
+            <div class="pchart-label">Weekly progress</div>
+            <div class="pchart-bars" id="previewBars"></div>
+          </div>
+          <div class="preview-donut">
+            <div class="pdonut" id="previewDonut">
+              <span id="previewPct">72%</span>
+            </div>
+            <div class="pdonut-label">consistency</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="section-inner">
+      <p class="section-tag">Everything you need</p>
+      <h2 class="section-h2">No fluff. Pure signal.</h2>
+      <div class="features-grid">
+        <div class="feature-card fc-wide">
+          <div class="fc-icon">◈</div>
+          <h3>Live calendar grid</h3>
+          <p>Click any cell to log a habit. Hover to rename inline. Week bands auto-group your month for instant pattern recognition.</p>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">◉</div>
+          <h3>Daily & weekly charts</h3>
+          <p>Bar charts that show momentum at a glance. Hover any bar for exact counts.</p>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">◐</div>
+          <h3>Donut completion</h3>
+          <p>Overall stats with a live donut chart that updates as you check habits.</p>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">◑</div>
+          <h3>Month history</h3>
+          <p>Every past month preserved with per-habit breakdowns and progress bars.</p>
+        </div>
+        <div class="feature-card">
+          <div class="fc-icon">◇</div>
+          <h3>Top 10 ranking</h3>
+          <p>See which habits you're nailing — adjustable with +/- controls.</p>
+        </div>
+        <div class="feature-card fc-wide">
+          <div class="fc-icon">◆</div>
+          <h3>Journal + monthly pulse</h3>
+          <p>Write wins and setbacks. The pulse strip visualises daily intensity across the full month.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how" id="how">
+    <div class="section-inner">
+      <p class="section-tag">How it works</p>
+      <h2 class="section-h2">Three steps to momentum.</h2>
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">01</span>
+          <h3>Sign up in seconds</h3>
+          <p>Google sign-in or email. Your data is tied to your account and synced automatically.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <span class="step-num">02</span>
+          <h3>Set your habits</h3>
+          <p>12 default habits pre-loaded. Rename, delete, or add your own directly in the calendar.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <span class="step-num">03</span>
+          <h3>Check in daily</h3>
+          <p>Tap cells to log. Watch your consistency score climb. Review history month over month.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="section-inner cta-inner">
+      <h2>Ready to build discipline?</h2>
+      <a href="auth.html" class="btn-primary btn-large">Start for free →</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-logo">Habitflow</span>
+      <span class="footer-copy">Built with focus. Made in India.</span>
+    </div>
+  </footer>
+
+  <script src="src/js/landing.js"></script>
+</body>
+</html>

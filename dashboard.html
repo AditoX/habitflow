@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Dashboard — Habitflow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="src/css/tracker.css" />
+  <link rel="stylesheet" href="src/css/dashboard.css" />
+</head>
+<body>
+
+  <!-- Auth guard overlay -->
+  <div id="authGuard" class="auth-guard">
+    <div class="guard-spinner"></div>
+  </div>
+
+  <div class="page-shell" id="appShell" style="display:none">
+
+    <!-- Top navbar -->
+    <header class="dash-nav">
+      <div class="dash-nav-inner">
+        <a href="index.html" class="nav-logo">Habitflow</a>
+        <div class="dash-nav-right">
+          <span class="dash-user-name" id="dashUserName"></span>
+          <div class="dash-avatar" id="dashAvatar"></div>
+          <button class="dash-signout" id="signOutBtn" title="Sign out">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-stack">
+
+      <section class="tracker-shell" id="dashboard">
+        <section class="tracker-layout">
+          <aside class="left-rail">
+            <div class="panel hero-panel">
+              <p class="panel-kicker">Habit Tracker</p>
+              <h2 id="monthHeading">January</h2>
+              <p class="hero-year" id="yearHeading">2026</p>
+              <div class="hero-meta">
+                <span>Consistency system</span>
+                <span>Built for focus</span>
+              </div>
+            </div>
+
+            <div class="panel settings-panel">
+              <div class="panel-title">Calendar Settings</div>
+              <label class="field">
+                <span>Year</span>
+                <input id="yearInput" type="number" min="2000" max="2100" />
+              </label>
+              <label class="field">
+                <span>Month</span>
+                <select id="monthSelect"></select>
+              </label>
+            </div>
+
+            <div class="panel habits-panel">
+              <div class="panel-title">My Habits</div>
+              <div class="habit-list" id="habitList"></div>
+              <button class="subtle-btn add-habit-btn" id="addHabitButton" type="button">Add habit</button>
+            </div>
+
+            <div class="panel mood-panel">
+              <div class="mini-field">
+                <span>Mood</span>
+                <strong id="moodValue">Steady</strong>
+              </div>
+              <div class="mini-field">
+                <span>Motivation</span>
+                <strong id="motivationValue">76%</strong>
+              </div>
+            </div>
+          </aside>
+
+          <section class="main-rail">
+
+            <div class="middle-row">
+              <div class="panel grid-panel">
+                <div class="calendar-grid" id="calendarGrid"></div>
+              </div>
+              <div class="right-panel-stack">
+                <div class="panel analysis-panel">
+                  <div class="panel-title">Analysis</div>
+                  <div class="analysis-table">
+                    <div class="analysis-head">
+                      <span>Goal</span><span>Actual</span><span>Left</span><span>Progress</span><span>%</span>
+                    </div>
+                    <div id="analysisBody"></div>
+                  </div>
+                </div>
+                <div class="panel streak-panel">
+                  <div class="panel-title">Top 10 Daily Habit</div>
+                  <ol class="streak-list" id="streakList"></ol>
+                </div>
+              </div>
+            </div>
+
+            <div class="top-row">
+              <div class="panel chart-panel">
+                <div class="panel-header">
+                  <div><p class="panel-kicker">Overview</p><h2>Daily Progress</h2></div>
+                  <span class="panel-stat" id="dailyAverageLabel">0% avg</span>
+                </div>
+                <div class="daily-chart" id="dailyChart"></div>
+                <div class="chart-axis" id="dailyAxis"></div>
+              </div>
+              <div class="panel chart-panel weekly-panel">
+                <div class="panel-header">
+                  <div><p class="panel-kicker">Summary</p><h2>Weekly Progress</h2></div>
+                  <span class="panel-stat" id="bestWeekLabel">Week 1</span>
+                </div>
+                <div class="weekly-chart" id="weeklyChart"></div>
+              </div>
+              <div class="stats-column">
+                <div class="panel goal-panel">
+                  <div class="panel-title">Goal</div>
+                  <div class="goal-grid">
+                    <div><span>Target</span><strong id="goalTarget">0</strong></div>
+                    <div><span>Completed</span><strong id="goalCompleted">0</strong></div>
+                    <div><span>Left</span><strong id="goalLeft">0</strong></div>
+                  </div>
+                </div>
+                <div class="panel donut-panel">
+                  <div class="panel-title">Overall Stats</div>
+                  <div class="donut-wrap">
+                    <div class="donut-chart" id="donutChart">
+                      <div class="donut-hole">
+                        <strong id="completionPercent">0%</strong>
+                        <span>done</span>
+                      </div>
+                    </div>
+                    <div class="donut-legend">
+                      <div><span class="legend-swatch complete"></span>Complete</div>
+                      <div><span class="legend-swatch remaining"></span>Remaining</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bottom-row">
+              <div class="panel mood-strip-panel">
+                <div class="panel-title">Monthly Pulse</div>
+                <div class="mood-strip" id="moodStrip"></div>
+              </div>
+              <div class="panel notes-panel">
+                <div class="panel-title">Journal</div>
+                <label class="notes-field" for="notesInput">
+                  <span>What's helping this month?</span>
+                  <textarea id="notesInput" rows="5" placeholder="Write wins, patterns, setbacks, or reminders here..."></textarea>
+                </label>
+              </div>
+            </div>
+
+            <div class="panel history-panel">
+              <div class="panel-title">Month History</div>
+              <div class="history-body" id="historyBody"></div>
+            </div>
+
+            <div id="habitEditorList" style="display:none"></div>
+          </section>
+        </section>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { firebaseConfig } from "./src/js/firebase-config.js";
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    let currentUser = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "auth.html";
+        return;
+      }
+      currentUser = user;
+      document.getElementById("authGuard").style.display = "none";
+      document.getElementById("appShell").style.display = "";
+
+      // Set avatar/name
+      const name = user.displayName || user.email.split("@")[0];
+      document.getElementById("dashUserName").textContent = name;
+      document.getElementById("dashAvatar").textContent = name.charAt(0).toUpperCase();
+
+      // Load user data from Firestore then init tracker
+      await loadUserData(user.uid);
+      window.__initTracker();
+    });
+
+    document.getElementById("signOutBtn").addEventListener("click", async () => {
+      await saveUserData(currentUser.uid);
+      await signOut(auth);
+      window.location.href = "auth.html";
+    });
+
+    async function loadUserData(uid) {
+      try {
+        const snap = await getDoc(doc(db, "users", uid));
+        if (snap.exists()) {
+          const data = snap.data();
+          localStorage.setItem("habit-tracker-dashboard", JSON.stringify(data.trackerState || {}));
+          localStorage.setItem("habit-tracker-dashboard-version", data.storageVersion || "");
+        }
+      } catch (e) {
+        console.warn("Could not load from Firestore, using localStorage:", e);
+      }
+    }
+
+    async function saveUserData(uid) {
+      try {
+        const raw = localStorage.getItem("habit-tracker-dashboard");
+        if (!raw) return;
+        await setDoc(doc(db, "users", uid), {
+          trackerState: JSON.parse(raw),
+          storageVersion: localStorage.getItem("habit-tracker-dashboard-version") || "",
+          updatedAt: new Date().toISOString(),
+        });
+      } catch (e) {
+        console.warn("Could not save to Firestore:", e);
+      }
+    }
+
+    // Auto-save to Firestore every 30s
+    setInterval(async () => {
+      if (currentUser) await saveUserData(currentUser.uid);
+    }, 30000);
+
+    // Save before leaving
+    window.addEventListener("beforeunload", () => {
+      if (currentUser) saveUserData(currentUser.uid);
+    });
+  </script>
+
+  <script src="src/js/tracker.js"></script>
+</body>
+</html>
