@@ -192,11 +192,24 @@ function renderHabitList() {
       <div class="habit-row">
         <span class="habit-badge" style="--habit-color:${h.color}"></span>
         <div class="habit-name">
-          <span>${h.name}</span>
-          <span class="habit-target">${h.target}</span>
+          <div class="habit-copy">
+            <span>${h.name}</span>
+            <span class="habit-target">${h.target}</span>
+          </div>
+          <div class="habit-row-actions">
+            <button class="habit-row-btn" type="button" data-role="edit-habit-inline" data-id="${h.id}">Edit</button>
+            <button class="habit-row-btn habit-row-btn--danger" type="button" data-role="delete-habit-inline" data-id="${h.id}">Del</button>
+          </div>
         </div>
       </div>`)
     .join("");
+
+  for (const btn of habitList.querySelectorAll("[data-role='edit-habit-inline']")) {
+    btn.addEventListener("click", handleInlineHabitEdit);
+  }
+  for (const btn of habitList.querySelectorAll("[data-role='delete-habit-inline']")) {
+    btn.addEventListener("click", handleDeleteHabit);
+  }
 }
 
 // ── Edit Habits panel (right side-panel, now hidden by default) ───────────────
@@ -241,6 +254,25 @@ function handleDeleteHabit(event) {
   if (currentHabits().length <= 1) return;
   state.habits = currentHabits().filter((h) => h.id !== habitId);
   for (const md of Object.values(state.checks)) delete md[habitId];
+  saveState(); render();
+}
+
+function handleInlineHabitEdit(event) {
+  const habitId = event.currentTarget.dataset.id;
+  const habit = currentHabits().find((h) => h.id === habitId);
+  if (!habit) return;
+
+  const nextName = window.prompt("Edit habit name", habit.name);
+  if (nextName === null) return;
+
+  const trimmedName = nextName.trim();
+  if (!trimmedName) return;
+
+  const nextTarget = window.prompt("Edit habit target", habit.target);
+  if (nextTarget === null) return;
+
+  habit.name = trimmedName;
+  habit.target = nextTarget.trim() || "Daily";
   saveState(); render();
 }
 

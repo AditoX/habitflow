@@ -570,13 +570,51 @@ a {
 .habit-name {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 10px;
   font-size: 0.92rem;
+}
+
+.habit-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.habit-copy span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .habit-target {
   color: var(--muted);
   font-size: 0.76rem;
+}
+
+.habit-row-actions {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.habit-row-btn {
+  min-height: 28px;
+  padding: 0 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(151, 164, 186, 0.14);
+  background: rgba(22, 29, 43, 0.9);
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-family: "Sora", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.habit-row-btn--danger {
+  color: #d7b0b0;
+  border-color: rgba(187, 133, 133, 0.18);
 }
 
 .mood-panel {
@@ -1345,13 +1383,23 @@ a {
 
   .habit-name {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 2px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
     align-items: start;
   }
 
   .habit-target {
     font-size: 0.72rem;
+  }
+
+  .habit-row-actions {
+    align-self: center;
+  }
+
+  .habit-row-btn {
+    min-height: 24px;
+    padding: 0 8px;
+    font-size: 0.62rem;
   }
 
   /* Popover — full width on mobile */
