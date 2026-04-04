@@ -394,13 +394,16 @@ function renderCalendar(days, habitChecks, habits) {
             <button class="habit-label-delete-btn" data-habit-id="${habit.id}" title="Delete habit">✕</button>
           </span>
         </div>
-        ${habitChecks[habit.id].map((checked, dayIndex) => `
-          <label class="day-cell">
+        ${habitChecks[habit.id].map((checked, dayIndex) => {
+          const locked = isDayLocked(habitChecks, habits, dayIndex);
+          return `
+          <label class="day-cell ${locked ? "day-cell--locked" : ""}">
             <span class="habit-check">
-              <input type="checkbox" data-habit="${habit.id}" data-day="${dayIndex}" ${checked ? "checked" : ""}/>
+              <input type="checkbox" data-habit="${habit.id}" data-day="${dayIndex}" ${checked ? "checked" : ""} ${locked ? "disabled" : ""}/>
               <span></span>
             </span>
-          </label>`).join("")}
+          </label>`;
+        }).join("")}
       </div>`)
     .join("");
 
@@ -480,13 +483,16 @@ function renderMobileCalendar(days, habitChecks, habits) {
             <button class="habit-label-delete-btn" data-habit-id="${habit.id}" title="Delete habit">Del</button>
           </span>
         </div>
-        ${visibleDays.map((dayIndex) => `
-          <label class="day-cell">
+        ${visibleDays.map((dayIndex) => {
+          const locked = isDayLocked(habitChecks, habits, dayIndex);
+          return `
+          <label class="day-cell ${locked ? "day-cell--locked" : ""}">
             <span class="habit-check">
-              <input type="checkbox" data-habit="${habit.id}" data-day="${dayIndex}" ${habitChecks[habit.id][dayIndex] ? "checked" : ""}/>
+              <input type="checkbox" data-habit="${habit.id}" data-day="${dayIndex}" ${habitChecks[habit.id][dayIndex] ? "checked" : ""} ${locked ? "disabled" : ""}/>
               <span></span>
             </span>
-          </label>`).join("")}
+          </label>`;
+        }).join("")}
       </div>`)
     .join("");
 
@@ -852,6 +858,21 @@ function defaultMobileWeekIndex(maxWeekIndex) {
 function average(list, habitCount) {
   if (list.length === 0 || habitCount === 0) return 0;
   return list.reduce((s, v) => s + v / habitCount, 0) / list.length;
+}
+
+function isDayLocked(habitChecks, habits, dayIndex) {
+  if (!isPastDayInViewedMonth(dayIndex)) return false;
+  return habits.every((habit) => {
+    const checks = habitChecks[habit.id];
+    return !Array.isArray(checks) || !checks[dayIndex];
+  });
+}
+
+function isPastDayInViewedMonth(dayIndex) {
+  const today = new Date();
+  const viewedDate = new Date(state.year, state.month, dayIndex + 1);
+  const currentDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  return viewedDate < currentDay;
 }
 
 function bestWeekIndex(weeklyTotals) { return weeklyTotals.indexOf(Math.max(...weeklyTotals)); }
