@@ -259,9 +259,9 @@ function handleDeleteHabit(event) {
 
 function handleInlineHabitEdit(event) {
   const habitId = event.currentTarget.dataset.id;
-  const row = event.currentTarget.closest(".habit-row");
-  if (!row) return;
-  openHabitEditorPopover(habitId, row);
+  const actionGroup = event.currentTarget.closest(".habit-row-actions");
+  if (!actionGroup) return;
+  openHabitEditorPopover(habitId, actionGroup);
 }
 
 function addHabit() {
