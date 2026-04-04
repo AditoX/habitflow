@@ -252,3 +252,67 @@ button { font: inherit; cursor: pointer; }
 
   .btn-auth { padding: 12px; font-size: 0.9rem; }
 }
+
+/* ── Google-only centered layout ── */
+.auth-card--centered {
+  text-align: center;
+}
+
+.auth-logo-mark {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(142,162,189,0.3), rgba(143,184,162,0.3));
+  border: 1px solid rgba(151,164,186,0.2);
+  display: grid;
+  place-items: center;
+  font-family: "Sora", sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 auto 24px;
+  color: var(--text);
+}
+
+.auth-card--centered .auth-header {
+  margin-bottom: 32px;
+}
+
+.auth-card--centered .auth-header h1 {
+  font-size: 1.6rem;
+}
+
+.btn-google {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(151,164,186,0.22);
+  border-radius: 14px;
+  padding: 14px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 180ms, border-color 180ms, transform 150ms;
+  margin-bottom: 20px;
+}
+
+.btn-google:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(151,164,186,0.4);
+  transform: translateY(-1px);
+}
+
+.btn-google:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-terms {
+  font-size: 0.76rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
