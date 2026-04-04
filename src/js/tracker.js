@@ -419,7 +419,7 @@ function renderCalendar(days, habitChecks, habits) {
   for (const btn of calendarGrid.querySelectorAll(".habit-label-edit-btn")) {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
-      openInlineHabitEditor(btn.dataset.habitId, btn.closest(".habit-label-actions") || btn, { preferAbove: true });
+      openInlineHabitEditor(btn.dataset.habitId, btn.closest(".habit-label-actions") || btn);
     });
   }
 

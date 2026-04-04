@@ -828,16 +828,20 @@ a {
   grid-template-columns: minmax(0, 1fr) 280px;
   gap: 10px;
   min-width: 0;
+  overflow: visible;
 }
 
 .grid-panel {
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
+  z-index: 3;
 }
 
 .calendar-grid {
   display: grid;
   gap: 3px;
   overflow-x: auto;
+  overflow-y: visible;
   max-width: 100%;
 }
 
