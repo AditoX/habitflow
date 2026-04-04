@@ -107,13 +107,15 @@ function bindEvents() {
     saveState();
   });
 
-  jumpCurrentMonth.addEventListener("click", () => {
-    const today = new Date();
-    state.month = today.getMonth();
-    state.year = today.getFullYear();
-    ensureMonthData(); saveState(); render();
-    document.getElementById("dashboard").scrollIntoView({ behavior: "smooth", block: "start" });
-  });
+  if (jumpCurrentMonth) {
+    jumpCurrentMonth.addEventListener("click", () => {
+      const today = new Date();
+      state.month = today.getMonth();
+      state.year = today.getFullYear();
+      ensureMonthData(); saveState(); render();
+      document.getElementById("dashboard").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
 
   addHabitButton.addEventListener("click", () => addHabit());
 }
@@ -613,6 +615,7 @@ function renderHistoryPanel() {
 
 // ── Hero preview ──────────────────────────────────────────────────────────────
 function renderHeroPreview(dailyTotals, percent, habitCount) {
+  if (!heroConsistency || !heroBandFill || !heroMiniGrid) return;
   heroConsistency.textContent = `${percent}%`;
   heroBandFill.style.width = `${percent}%`;
   const sample = dailyTotals.slice(0, 12);
@@ -627,6 +630,7 @@ function renderHeroPreview(dailyTotals, percent, habitCount) {
 }
 
 function setupHeroMiniGrid() {
+  if (!heroMiniGrid) return;
   heroMiniGrid.innerHTML = Array.from({ length: 12 }, (_, i) => {
     const fill = 24 + ((i * 5) % 34);
     return `<div class="preview-mini-cell" style="--fill:${fill}%"></div>`;
