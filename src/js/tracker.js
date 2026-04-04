@@ -419,7 +419,7 @@ function renderCalendar(days, habitChecks, habits) {
   for (const btn of calendarGrid.querySelectorAll(".habit-label-edit-btn")) {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
-      openInlineHabitEditor(btn.dataset.habitId);
+      openInlineHabitEditor(btn.dataset.habitId, btn.closest(".habit-label-actions") || btn);
     });
   }
 
@@ -537,10 +537,9 @@ function renderMobileCalendar(days, habitChecks, habits) {
   }
 }
 
-function openInlineHabitEditor(habitId) {
-  const labelEl = calendarGrid.querySelector(`.calendar-label-editable[data-habit-id="${habitId}"]`);
-  if (!labelEl) return;
-  openHabitEditorPopover(habitId, labelEl);
+function openInlineHabitEditor(habitId, anchorEl) {
+  const fallbackEl = calendarGrid.querySelector(`.calendar-label-editable[data-habit-id="${habitId}"]`);
+  openHabitEditorPopover(habitId, anchorEl || fallbackEl);
 }
 
 function openHabitEditorPopover(habitId, anchorEl) {
@@ -567,6 +566,7 @@ function openHabitEditorPopover(habitId, anchorEl) {
     </div>`;
 
   anchorEl.appendChild(popover);
+  placeHabitEditorPopover(popover, anchorEl);
 
   const nameInput   = popover.querySelector(".popover-name-input");
   const targetInput = popover.querySelector(".popover-target-input");
@@ -597,6 +597,25 @@ function openHabitEditorPopover(habitId, anchorEl) {
       document.removeEventListener("click", outsideClick);
     });
   }, 0);
+}
+
+function placeHabitEditorPopover(popover, anchorEl) {
+  if (!popover || !anchorEl) return;
+
+  popover.classList.remove("habit-edit-popover--above", "habit-edit-popover--align-left");
+
+  const rect = popover.getBoundingClientRect();
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+  const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+
+  if (rect.bottom > viewportHeight - 16 && rect.top > rect.height + 24) {
+    popover.classList.add("habit-edit-popover--above");
+  }
+
+  const adjustedRect = popover.getBoundingClientRect();
+  if (adjustedRect.right > viewportWidth - 16) {
+    popover.classList.add("habit-edit-popover--align-left");
+  }
 }
 
 // ── Analysis ──────────────────────────────────────────────────────────────────
