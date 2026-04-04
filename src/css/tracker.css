@@ -1180,6 +1180,15 @@ a {
   /* Left rail stacks fully */
   .left-rail {
     grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .hero-panel,
+  .settings-panel,
+  .habits-panel,
+  .mood-panel {
+    grid-column: auto;
+    min-width: 0;
   }
 
   .hero-panel { padding: 14px; }
@@ -1246,6 +1255,17 @@ a {
   .history-habit-row {
     grid-template-columns: 8px 1fr 34px 60px 30px;
     gap: 4px;
+  }
+
+  .habit-name {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    align-items: start;
+  }
+
+  .habit-target {
+    font-size: 0.72rem;
   }
 
   /* Popover — full width on mobile */
