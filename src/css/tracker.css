@@ -1240,7 +1240,7 @@ a {
 
   .calendar-head--mobile-days,
   .calendar-row--mobile {
-    grid-template-columns: 108px repeat(var(--days, 7), minmax(0, 1fr));
+    grid-template-columns: 132px repeat(var(--days, 7), minmax(0, 1fr));
   }
 
   .calendar-week-nav,
@@ -1284,6 +1284,16 @@ a {
 
   .head-cell {
     font-size: 0.6rem;
+  }
+
+  .day-cell,
+  .head-cell {
+    min-height: 22px;
+  }
+
+  .habit-check input:checked + span::after {
+    width: 5px;
+    height: 9px;
   }
 
   /* Charts */
