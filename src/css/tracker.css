@@ -553,6 +553,7 @@ a {
   align-items: center;
   padding: 10px 2px;
   border-bottom: 1px solid rgba(151, 164, 186, 0.08);
+  position: relative;
 }
 
 .habit-row:last-child {
@@ -596,6 +597,12 @@ a {
   display: flex;
   gap: 6px;
   flex: 0 0 auto;
+}
+
+.habit-row .habit-edit-popover {
+  left: 30px;
+  right: 0;
+  top: calc(100% + 8px);
 }
 
 .habit-row-btn {

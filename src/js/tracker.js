@@ -259,21 +259,9 @@ function handleDeleteHabit(event) {
 
 function handleInlineHabitEdit(event) {
   const habitId = event.currentTarget.dataset.id;
-  const habit = currentHabits().find((h) => h.id === habitId);
-  if (!habit) return;
-
-  const nextName = window.prompt("Edit habit name", habit.name);
-  if (nextName === null) return;
-
-  const trimmedName = nextName.trim();
-  if (!trimmedName) return;
-
-  const nextTarget = window.prompt("Edit habit target", habit.target);
-  if (nextTarget === null) return;
-
-  habit.name = trimmedName;
-  habit.target = nextTarget.trim() || "Daily";
-  saveState(); render();
+  const row = event.currentTarget.closest(".habit-row");
+  if (!row) return;
+  openHabitEditorPopover(habitId, row);
 }
 
 function addHabit() {
@@ -550,10 +538,14 @@ function renderMobileCalendar(days, habitChecks, habits) {
 }
 
 function openInlineHabitEditor(habitId) {
-  const habit = currentHabits().find((h) => h.id === habitId);
-  if (!habit) return;
   const labelEl = calendarGrid.querySelector(`.calendar-label-editable[data-habit-id="${habitId}"]`);
   if (!labelEl) return;
+  openHabitEditorPopover(habitId, labelEl);
+}
+
+function openHabitEditorPopover(habitId, anchorEl) {
+  const habit = currentHabits().find((h) => h.id === habitId);
+  if (!habit || !anchorEl) return;
 
   // Close any existing popover
   document.querySelectorAll(".habit-edit-popover").forEach((p) => p.remove());
@@ -574,7 +566,7 @@ function openInlineHabitEditor(habitId) {
       <button class="popover-cancel-btn" type="button">Cancel</button>
     </div>`;
 
-  labelEl.appendChild(popover);
+  anchorEl.appendChild(popover);
 
   const nameInput   = popover.querySelector(".popover-name-input");
   const targetInput = popover.querySelector(".popover-target-input");
