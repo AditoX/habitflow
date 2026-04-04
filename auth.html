@@ -78,7 +78,7 @@
         "auth/network-request-failed": "Network error. Check your connection.",
         "auth/too-many-requests":      "Too many attempts. Try again later.",
       };
-      return map[code] || "Something went wrong. Please try again.";
+      return map[code] || `Sign-in failed (${code || "unknown"}). Please try again.`;
     }
 
     const googleSVG = googleBtn.innerHTML;
@@ -91,6 +91,11 @@
         await signInWithPopup(auth, provider);
         window.location.href = "dashboard.html";
       } catch (err) {
+        console.error("Firebase sign-in failed:", {
+          code: err?.code,
+          message: err?.message,
+          customData: err?.customData,
+        });
         showError(friendlyError(err.code));
         googleBtn.disabled = false;
         googleBtn.innerHTML = googleSVG;
