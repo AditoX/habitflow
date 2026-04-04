@@ -70,6 +70,12 @@ const heroConsistency   = document.getElementById("heroConsistency");
 const heroBandFill      = document.getElementById("heroBandFill");
 const heroMiniGrid      = document.getElementById("heroMiniGrid");
 const jumpCurrentMonth  = document.getElementById("jumpCurrentMonth");
+const mobileCalendarQuery = typeof window !== "undefined" && window.matchMedia
+  ? window.matchMedia("(max-width: 640px)")
+  : null;
+
+let mobileWeekIndex = 0;
+let mobileWeekMonthKey = "";
 
 // Called by dashboard.html after auth is confirmed
 window.__initTracker = function() { initialize(); };
@@ -332,6 +338,11 @@ function renderWeeklyChart(weeklyTotals, habitCount) {
 
 // ── Calendar with inline habit label editing ──────────────────────────────────
 function renderCalendar(days, habitChecks, habits) {
+  if (isMobileCalendar()) {
+    renderMobileCalendar(days, habitChecks, habits);
+    return;
+  }
+
   calendarGrid.style.setProperty("--days", String(days));
   const weekSpans = buildWeekSpans(days);
 
@@ -376,6 +387,107 @@ function renderCalendar(days, habitChecks, habits) {
   calendarGrid.innerHTML = weekBand + headRow + habitRows;
 
   document.getElementById("addHabitInlineBtn").addEventListener("click", () => addHabit());
+
+  for (const checkbox of calendarGrid.querySelectorAll("input[type='checkbox']")) {
+    checkbox.addEventListener("change", (e) => {
+      const input = e.currentTarget;
+      state.checks[getMonthKey()][input.dataset.habit][Number(input.dataset.day)] = input.checked;
+      saveState(); render();
+    });
+  }
+
+  for (const btn of calendarGrid.querySelectorAll(".habit-label-edit-btn")) {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openInlineHabitEditor(btn.dataset.habitId);
+    });
+  }
+
+  for (const btn of calendarGrid.querySelectorAll(".habit-label-delete-btn")) {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const habitId = btn.dataset.habitId;
+      if (currentHabits().length <= 1) return;
+      if (!confirm("Delete this habit and all its data?")) return;
+      state.habits = currentHabits().filter((h) => h.id !== habitId);
+      for (const md of Object.values(state.checks)) delete md[habitId];
+      saveState(); render();
+    });
+  }
+}
+
+function renderMobileCalendar(days, habitChecks, habits) {
+  syncMobileWeekIndex(days);
+
+  const weekRanges = buildWeekRanges(days);
+  const activeWeek = weekRanges[mobileWeekIndex] || weekRanges[0];
+  const visibleDays = Array.from(
+    { length: activeWeek.end - activeWeek.start + 1 },
+    (_, offset) => activeWeek.start + offset
+  );
+
+  calendarGrid.style.setProperty("--days", String(visibleDays.length));
+  calendarGrid.classList.add("calendar-grid--mobile-week");
+
+  const weekBand = `
+    <div class="calendar-head calendar-head--mobile-nav">
+      <button class="calendar-week-nav" id="mobileWeekPrev" type="button" ${mobileWeekIndex === 0 ? "disabled" : ""}>Prev</button>
+      <div class="week-band week-band--mobile">Week ${mobileWeekIndex + 1}</div>
+      <button class="calendar-week-nav" id="mobileWeekNext" type="button" ${mobileWeekIndex === weekRanges.length - 1 ? "disabled" : ""}>Next</button>
+    </div>
+    <div class="calendar-head calendar-head--mobile-add">
+      <button class="add-habit-inline-btn add-habit-inline-btn--mobile" id="addHabitInlineBtn" type="button" title="Add a new habit">+ Add habit</button>
+      <div class="calendar-mobile-range">Days ${activeWeek.start + 1}-${activeWeek.end + 1}</div>
+    </div>`;
+
+  const headRow = `
+    <div class="calendar-head calendar-head--mobile-days">
+      <div class="calendar-label">Habits</div>
+      ${visibleDays.map((dayIndex) => {
+        const date = new Date(state.year, state.month, dayIndex + 1);
+        return `<div class="head-cell"><span>${weekdayLabels[date.getDay()]}</span><strong>${dayIndex + 1}</strong></div>`;
+      }).join("")}
+    </div>`;
+
+  const habitRows = habits
+    .map((habit) => `
+      <div class="calendar-row calendar-row--mobile">
+        <div class="calendar-label calendar-label-editable" data-habit-id="${habit.id}">
+          <span class="habit-dot" style="background:${habit.color}"></span>
+          <span class="habit-label-text">${habit.name}</span>
+          <span class="habit-label-actions">
+            <button class="habit-label-edit-btn" data-habit-id="${habit.id}" title="Rename habit">Edit</button>
+            <button class="habit-label-delete-btn" data-habit-id="${habit.id}" title="Delete habit">Del</button>
+          </span>
+        </div>
+        ${visibleDays.map((dayIndex) => `
+          <label class="day-cell">
+            <span class="habit-check">
+              <input type="checkbox" data-habit="${habit.id}" data-day="${dayIndex}" ${habitChecks[habit.id][dayIndex] ? "checked" : ""}/>
+              <span></span>
+            </span>
+          </label>`).join("")}
+      </div>`)
+    .join("");
+
+  calendarGrid.innerHTML = weekBand + headRow + habitRows;
+
+  document.getElementById("addHabitInlineBtn").addEventListener("click", () => addHabit());
+
+  const prevBtn = document.getElementById("mobileWeekPrev");
+  const nextBtn = document.getElementById("mobileWeekNext");
+  if (prevBtn) {
+    prevBtn.addEventListener("click", () => {
+      mobileWeekIndex = Math.max(0, mobileWeekIndex - 1);
+      render();
+    });
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener("click", () => {
+      mobileWeekIndex = Math.min(weekRanges.length - 1, mobileWeekIndex + 1);
+      render();
+    });
+  }
 
   for (const checkbox of calendarGrid.querySelectorAll("input[type='checkbox']")) {
     checkbox.addEventListener("change", (e) => {
@@ -659,6 +771,36 @@ function buildWeekSpans(days) {
   let remaining = days;
   while (remaining > 0) { spans.push(Math.min(7, remaining)); remaining -= 7; }
   return spans;
+}
+
+function buildWeekRanges(days) {
+  const ranges = [];
+  for (let start = 0; start < days; start += 7) {
+    ranges.push({ start, end: Math.min(days - 1, start + 6) });
+  }
+  return ranges;
+}
+
+function isMobileCalendar() {
+  return mobileCalendarQuery ? mobileCalendarQuery.matches : window.innerWidth <= 640;
+}
+
+function syncMobileWeekIndex(days) {
+  const monthKey = getMonthKey();
+  const maxWeekIndex = Math.max(0, Math.ceil(days / 7) - 1);
+  if (mobileWeekMonthKey !== monthKey) {
+    mobileWeekMonthKey = monthKey;
+    mobileWeekIndex = defaultMobileWeekIndex(maxWeekIndex);
+  } else {
+    mobileWeekIndex = Math.min(maxWeekIndex, Math.max(0, mobileWeekIndex));
+  }
+}
+
+function defaultMobileWeekIndex(maxWeekIndex) {
+  const today = new Date();
+  const isCurrentMonth = today.getFullYear() === state.year && today.getMonth() === state.month;
+  if (!isCurrentMonth) return 0;
+  return Math.min(maxWeekIndex, Math.floor((today.getDate() - 1) / 7));
 }
 
 function average(list, habitCount) {

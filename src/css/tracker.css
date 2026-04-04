@@ -1213,16 +1213,78 @@ a {
   .donut-hole { width: 54px; }
   .donut-hole strong { font-size: 0.9rem; }
 
-  /* Calendar: even more compact label col */
-  .calendar-row,
-  .calendar-head {
-    grid-template-columns: 110px repeat(var(--days, 31), minmax(20px, 1fr));
-    min-width: 700px;
+  .calendar-grid {
+    overflow-x: visible;
   }
 
-  .calendar-label { font-size: 0.72rem; padding-inline: 6px; }
-  .head-cell { font-size: 0.6rem; }
-  .week-band { font-size: 0.65rem; }
+  .calendar-grid--mobile-week {
+    gap: 6px;
+  }
+
+  .calendar-head--mobile-nav,
+  .calendar-head--mobile-add,
+  .calendar-head--mobile-days,
+  .calendar-row--mobile {
+    min-width: 0;
+  }
+
+  .calendar-head--mobile-nav {
+    grid-template-columns: 72px minmax(0, 1fr) 72px;
+    align-items: stretch;
+  }
+
+  .calendar-head--mobile-add {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px;
+  }
+
+  .calendar-head--mobile-days,
+  .calendar-row--mobile {
+    grid-template-columns: 108px repeat(var(--days, 7), minmax(0, 1fr));
+  }
+
+  .calendar-week-nav,
+  .calendar-mobile-range {
+    min-height: 34px;
+    border-radius: 10px;
+    border: 1px solid rgba(151, 164, 186, 0.12);
+    background: rgba(21, 28, 42, 0.9);
+    display: grid;
+    place-items: center;
+    font-family: "Sora", sans-serif;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .calendar-week-nav[disabled] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .week-band--mobile {
+    min-height: 34px;
+    font-size: 0.7rem;
+  }
+
+  .add-habit-inline-btn--mobile {
+    width: 100%;
+    min-height: 34px;
+  }
+
+  .calendar-mobile-range {
+    padding: 0 10px;
+    color: var(--muted);
+  }
+
+  .calendar-label {
+    font-size: 0.72rem;
+    padding-inline: 6px;
+  }
+
+  .head-cell {
+    font-size: 0.6rem;
+  }
 
   /* Charts */
   .daily-chart { min-height: 70px; }
