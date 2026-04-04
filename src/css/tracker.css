@@ -1301,12 +1301,26 @@ a {
   .weekly-chart { min-height: 70px; }
   .chart-panel, .weekly-panel { padding: 8px 10px; }
 
-  /* Analysis table — hide progress bar on tiny screens */
-  .progress-track { display: none; }
+  /* Analysis table — use the full card width on phones */
+  .progress-track {
+    display: block;
+    min-width: 0;
+  }
+
   .analysis-head,
   .analysis-row {
-    grid-template-columns: 30px 34px 30px 28px;
-    gap: 4px;
+    grid-template-columns: minmax(42px, 0.9fr) minmax(42px, 0.9fr) minmax(42px, 0.9fr) minmax(72px, 1.6fr) minmax(30px, 0.7fr);
+    gap: 6px;
+    width: 100%;
+  }
+
+  .analysis-table {
+    width: 100%;
+  }
+
+  .analysis-row span,
+  .analysis-head span {
+    min-width: 0;
   }
 
   /* Streak list */
