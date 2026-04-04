@@ -1500,6 +1500,19 @@ a {
   min-width: 240px;
   box-shadow: 0 16px 48px rgba(0,0,0,0.5);
   backdrop-filter: blur(12px);
+  transform-origin: top right;
+  animation: popover-enter 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes popover-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .habit-edit-popover label {
