@@ -419,7 +419,7 @@ function renderCalendar(days, habitChecks, habits) {
   for (const btn of calendarGrid.querySelectorAll(".habit-label-edit-btn")) {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
-      openInlineHabitEditor(btn.dataset.habitId, btn.closest(".habit-label-actions") || btn);
+      openInlineHabitEditor(btn.dataset.habitId, btn.closest(".habit-label-actions") || btn, { preferAbove: true });
     });
   }
 
@@ -537,12 +537,12 @@ function renderMobileCalendar(days, habitChecks, habits) {
   }
 }
 
-function openInlineHabitEditor(habitId, anchorEl) {
+function openInlineHabitEditor(habitId, anchorEl, options = {}) {
   const fallbackEl = calendarGrid.querySelector(`.calendar-label-editable[data-habit-id="${habitId}"]`);
-  openHabitEditorPopover(habitId, anchorEl || fallbackEl);
+  openHabitEditorPopover(habitId, anchorEl || fallbackEl, options);
 }
 
-function openHabitEditorPopover(habitId, anchorEl) {
+function openHabitEditorPopover(habitId, anchorEl, options = {}) {
   const habit = currentHabits().find((h) => h.id === habitId);
   if (!habit || !anchorEl) return;
 
@@ -566,7 +566,7 @@ function openHabitEditorPopover(habitId, anchorEl) {
     </div>`;
 
   anchorEl.appendChild(popover);
-  placeHabitEditorPopover(popover, anchorEl);
+  placeHabitEditorPopover(popover, anchorEl, options);
 
   const nameInput   = popover.querySelector(".popover-name-input");
   const targetInput = popover.querySelector(".popover-target-input");
@@ -599,16 +599,19 @@ function openHabitEditorPopover(habitId, anchorEl) {
   }, 0);
 }
 
-function placeHabitEditorPopover(popover, anchorEl) {
+function placeHabitEditorPopover(popover, anchorEl, options = {}) {
   if (!popover || !anchorEl) return;
 
   popover.classList.remove("habit-edit-popover--above", "habit-edit-popover--align-left");
+  if (options.preferAbove) {
+    popover.classList.add("habit-edit-popover--above");
+  }
 
   const rect = popover.getBoundingClientRect();
   const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
   const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
 
-  if (rect.bottom > viewportHeight - 16 && rect.top > rect.height + 24) {
+  if (!options.preferAbove && rect.bottom > viewportHeight - 16 && rect.top > rect.height + 24) {
     popover.classList.add("habit-edit-popover--above");
   }
 
