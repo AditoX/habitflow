@@ -1,12 +1,16 @@
 {
   "version": 2,
   "rewrites": [
+    { "source": "/manifest.webmanifest", "destination": "/src/manifest.webmanifest" },
+    { "source": "/service-worker.js", "destination": "/src/js/service-worker.js" },
+    { "source": "/icons/icon.svg", "destination": "/src/icons/icon.svg" },
+    { "source": "/icons/icon-maskable.svg", "destination": "/src/icons/icon-maskable.svg" },
     { "source": "/dashboard", "destination": "/dashboard.html" },
     { "source": "/auth",      "destination": "/auth.html" }
   ],
   "headers": [
     {
-      "source": "/src/js/service-worker.js",
+      "source": "/service-worker.js",
       "headers": [
         { "key": "Content-Type", "value": "application/javascript; charset=utf-8" },
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
@@ -14,7 +18,7 @@
       ]
     },
     {
-      "source": "/src/manifest.webmanifest",
+      "source": "/manifest.webmanifest",
       "headers": [
         { "key": "Content-Type", "value": "application/manifest+json; charset=utf-8" }
       ]
