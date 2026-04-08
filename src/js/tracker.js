@@ -682,6 +682,9 @@ function startHabitReorderDrag() {
 
   reorderDrag.sourceEl.classList.add("habit-dragging");
   document.body.classList.add("habit-reorder-active");
+  if (typeof reorderDrag.sourceEl.setPointerCapture === "function") {
+    reorderDrag.sourceEl.setPointerCapture(reorderDrag.pointerId);
+  }
 
   document.removeEventListener("pointermove", handleHabitReorderPendingMove);
   document.removeEventListener("pointerup", clearHabitReorderState);
@@ -762,6 +765,11 @@ function clearHabitReorderState() {
 
   if (reorderDrag?.sourceEl) {
     reorderDrag.sourceEl.classList.remove("habit-dragging");
+    if (typeof reorderDrag.sourceEl.releasePointerCapture === "function") {
+      try {
+        reorderDrag.sourceEl.releasePointerCapture(reorderDrag.pointerId);
+      } catch {}
+    }
   }
 
   clearHabitDropIndicators();

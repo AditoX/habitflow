@@ -559,10 +559,22 @@ a {
 .habit-row--draggable .habit-copy span:first-child,
 .calendar-label-editable[data-drag-habit-id] .habit-label-text {
   cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .habit-dragging {
   opacity: 0.6;
+}
+
+body.habit-reorder-active {
+  overflow: hidden;
+}
+
+body.habit-reorder-active .habit-row--draggable,
+body.habit-reorder-active .calendar-label-editable[data-drag-habit-id] {
+  touch-action: none;
 }
 
 .habit-drop-before {
