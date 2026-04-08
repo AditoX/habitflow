@@ -24,7 +24,7 @@
   </div>
 
   <nav class="auth-nav">
-    <a href="index.html" class="nav-logo">Habitflow</a>
+    <a href="/" class="nav-logo">Habitflow</a>
   </nav>
 
   <main class="auth-shell">
@@ -70,7 +70,7 @@
     const authError = document.getElementById("authError");
 
     onAuthStateChanged(auth, (user) => {
-      if (user) window.location.href = "dashboard.html";
+      if (user) window.location.href = "/dashboard";
     });
 
     function showError(msg) {
@@ -96,7 +96,7 @@
       googleBtn.textContent = "Signing in…";
       try {
         await signInWithPopup(auth, provider);
-        window.location.href = "dashboard.html";
+        window.location.href = "/dashboard";
       } catch (err) {
         console.error("Firebase sign-in failed:", {
           code: err?.code,

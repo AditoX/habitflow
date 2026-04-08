@@ -2,6 +2,9 @@ const STATIC_CACHE = "habitflow-static-v2";
 const HTML_CACHE = "habitflow-html-v2";
 
 const APP_SHELL = [
+  "/",
+  "/auth",
+  "/dashboard",
   "/index.html",
   "/auth.html",
   "/dashboard.html",
@@ -62,9 +65,12 @@ async function networkFirstPage(request) {
     }
 
     const cachedResponse = (await cache.match(request))
-      || (await caches.match("/index.html"))
+      || (await caches.match("/dashboard"))
+      || (await caches.match("/auth"))
+      || (await caches.match("/"))
       || (await caches.match("/dashboard.html"))
-      || (await caches.match("/auth.html"));
+      || (await caches.match("/auth.html"))
+      || (await caches.match("/index.html"));
 
     if (cachedResponse) {
       return cachedResponse;
@@ -73,9 +79,12 @@ async function networkFirstPage(request) {
     return response;
   } catch {
     return (await cache.match(request))
-      || (await caches.match("/index.html"))
+      || (await caches.match("/dashboard"))
+      || (await caches.match("/auth"))
+      || (await caches.match("/"))
       || (await caches.match("/dashboard.html"))
-      || (await caches.match("/auth.html"));
+      || (await caches.match("/auth.html"))
+      || (await caches.match("/index.html"));
   }
 }
 
