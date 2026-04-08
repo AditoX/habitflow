@@ -556,6 +556,23 @@ a {
   position: relative;
 }
 
+.habit-row--draggable .habit-copy span:first-child,
+.calendar-label-editable[data-drag-habit-id] .habit-label-text {
+  cursor: grab;
+}
+
+.habit-dragging {
+  opacity: 0.6;
+}
+
+.habit-drop-before {
+  box-shadow: inset 0 3px 0 rgba(143, 184, 162, 0.8);
+}
+
+.habit-drop-after {
+  box-shadow: inset 0 -3px 0 rgba(143, 184, 162, 0.8);
+}
+
 .habit-row:last-child {
   border-bottom: 0;
 }
@@ -618,6 +635,12 @@ a {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   cursor: pointer;
+}
+
+.habit-row-btn:disabled,
+.habit-label-move-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
 }
 
 .habit-row-btn--danger {
@@ -1501,6 +1524,7 @@ a {
 }
 
 .habit-label-edit-btn,
+.habit-label-move-btn,
 .habit-label-delete-btn {
   border: 1px solid rgba(151, 164, 186, 0.18);
   border-radius: 6px;
@@ -1513,6 +1537,7 @@ a {
   transition: background 150ms, color 150ms;
 }
 
+.habit-label-move-btn:hover:not(:disabled),
 .habit-label-edit-btn:hover { background: rgba(142,162,189,0.2); color: var(--text); }
 .habit-label-delete-btn:hover { background: rgba(187,133,133,0.2); color: #d3b4b4; }
 

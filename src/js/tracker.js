@@ -76,6 +76,9 @@ const mobileCalendarQuery = typeof window !== "undefined" && window.matchMedia
 
 let mobileWeekIndex = 0;
 let mobileWeekMonthKey = "";
+let reorderPressTimer = null;
+let reorderPending = null;
+let reorderDrag = null;
 
 // Called by dashboard.html after auth is confirmed
 window.__initTracker = function() { initialize(); };
@@ -189,7 +192,7 @@ function ensureMonthData() {
 function renderHabitList() {
   habitList.innerHTML = currentHabits()
     .map((h) => `
-      <div class="habit-row">
+      <div class="habit-row habit-row--draggable" data-drag-habit-id="${h.id}">
         <span class="habit-badge" style="--habit-color:${h.color}"></span>
         <div class="habit-name">
           <div class="habit-copy">
@@ -210,6 +213,7 @@ function renderHabitList() {
   for (const btn of habitList.querySelectorAll("[data-role='delete-habit-inline']")) {
     btn.addEventListener("click", handleDeleteHabit);
   }
+  bindHabitReorderTargets(habitList);
 }
 
 // ── Edit Habits panel (right side-panel, now hidden by default) ───────────────
@@ -386,7 +390,7 @@ function renderCalendar(days, habitChecks, habits) {
   const habitRows = habits
     .map((habit) => `
       <div class="calendar-row">
-        <div class="calendar-label calendar-label-editable" data-habit-id="${habit.id}">
+        <div class="calendar-label calendar-label-editable" data-habit-id="${habit.id}" data-drag-habit-id="${habit.id}">
           <span class="habit-dot" style="background:${habit.color}"></span>
           <span class="habit-label-text">${habit.name}</span>
           <span class="habit-label-actions">
@@ -395,7 +399,7 @@ function renderCalendar(days, habitChecks, habits) {
           </span>
         </div>
         ${habitChecks[habit.id].map((checked, dayIndex) => {
-          const locked = isDayLocked(habitChecks, habits, dayIndex);
+          const locked = isCellLocked(checked, dayIndex);
           return `
           <label class="day-cell ${locked ? "day-cell--locked" : ""}">
             <span class="habit-check">
@@ -437,6 +441,7 @@ function renderCalendar(days, habitChecks, habits) {
       saveState(); render();
     });
   }
+  bindHabitReorderTargets(calendarGrid);
 }
 
 function renderMobileCalendar(days, habitChecks, habits) {
@@ -475,7 +480,7 @@ function renderMobileCalendar(days, habitChecks, habits) {
   const habitRows = habits
     .map((habit) => `
       <div class="calendar-row calendar-row--mobile">
-        <div class="calendar-label calendar-label-editable" data-habit-id="${habit.id}">
+        <div class="calendar-label calendar-label-editable" data-habit-id="${habit.id}" data-drag-habit-id="${habit.id}">
           <span class="habit-dot" style="background:${habit.color}"></span>
           <span class="habit-label-text">${habit.name}</span>
           <span class="habit-label-actions">
@@ -484,7 +489,7 @@ function renderMobileCalendar(days, habitChecks, habits) {
           </span>
         </div>
         ${visibleDays.map((dayIndex) => {
-          const locked = isDayLocked(habitChecks, habits, dayIndex);
+          const locked = isCellLocked(habitChecks[habit.id][dayIndex], dayIndex);
           return `
           <label class="day-cell ${locked ? "day-cell--locked" : ""}">
             <span class="habit-check">
@@ -541,6 +546,7 @@ function renderMobileCalendar(days, habitChecks, habits) {
       saveState(); render();
     });
   }
+  bindHabitReorderTargets(calendarGrid);
 }
 
 function openInlineHabitEditor(habitId, anchorEl, options = {}) {
@@ -625,6 +631,141 @@ function placeHabitEditorPopover(popover, anchorEl, options = {}) {
   if (adjustedRect.right > viewportWidth - 16) {
     popover.classList.add("habit-edit-popover--align-left");
   }
+}
+
+function bindHabitReorderTargets(root) {
+  for (const el of root.querySelectorAll("[data-drag-habit-id]")) {
+    el.addEventListener("pointerdown", handleHabitReorderPointerDown);
+  }
+}
+
+function handleHabitReorderPointerDown(event) {
+  if (event.pointerType === "mouse" && event.button !== 0) return;
+  if (event.target.closest("button, input, textarea, select")) return;
+
+  clearHabitReorderState();
+
+  reorderPending = {
+    habitId: event.currentTarget.dataset.dragHabitId,
+    sourceEl: event.currentTarget,
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    startY: event.clientY,
+  };
+
+  reorderPressTimer = window.setTimeout(() => {
+    startHabitReorderDrag();
+  }, 220);
+
+  document.addEventListener("pointermove", handleHabitReorderPendingMove);
+  document.addEventListener("pointerup", clearHabitReorderState);
+  document.addEventListener("pointercancel", clearHabitReorderState);
+}
+
+function handleHabitReorderPendingMove(event) {
+  if (!reorderPending || event.pointerId !== reorderPending.pointerId) return;
+  if (Math.abs(event.clientX - reorderPending.startX) > 8 || Math.abs(event.clientY - reorderPending.startY) > 8) {
+    clearHabitReorderState();
+  }
+}
+
+function startHabitReorderDrag() {
+  if (!reorderPending) return;
+
+  reorderDrag = {
+    habitId: reorderPending.habitId,
+    pointerId: reorderPending.pointerId,
+    sourceEl: reorderPending.sourceEl,
+    targetId: null,
+    placement: "after",
+  };
+
+  reorderDrag.sourceEl.classList.add("habit-dragging");
+  document.body.classList.add("habit-reorder-active");
+
+  document.removeEventListener("pointermove", handleHabitReorderPendingMove);
+  document.addEventListener("pointermove", handleHabitReorderDragMove, { passive: false });
+  document.addEventListener("pointerup", handleHabitReorderDrop);
+  document.addEventListener("pointercancel", clearHabitReorderState);
+
+  reorderPending = null;
+  reorderPressTimer = null;
+}
+
+function handleHabitReorderDragMove(event) {
+  if (!reorderDrag || event.pointerId !== reorderDrag.pointerId) return;
+  event.preventDefault();
+
+  const hovered = document.elementFromPoint(event.clientX, event.clientY)?.closest("[data-drag-habit-id]");
+  clearHabitDropIndicators();
+
+  if (!hovered || hovered.dataset.dragHabitId === reorderDrag.habitId) {
+    reorderDrag.targetId = null;
+    return;
+  }
+
+  const rect = hovered.getBoundingClientRect();
+  const placement = event.clientY < rect.top + rect.height / 2 ? "before" : "after";
+  reorderDrag.targetId = hovered.dataset.dragHabitId;
+  reorderDrag.placement = placement;
+  hovered.classList.add(placement === "before" ? "habit-drop-before" : "habit-drop-after");
+}
+
+function handleHabitReorderDrop(event) {
+  if (!reorderDrag || event.pointerId !== reorderDrag.pointerId) {
+    clearHabitReorderState();
+    return;
+  }
+
+  const { habitId, targetId, placement } = reorderDrag;
+  clearHabitReorderState();
+
+  if (!targetId || targetId === habitId) return;
+  moveHabitToPosition(habitId, targetId, placement);
+}
+
+function moveHabitToPosition(habitId, targetId, placement) {
+  const habits = [...currentHabits()];
+  const sourceIndex = habits.findIndex((habit) => habit.id === habitId);
+  if (sourceIndex === -1) return;
+
+  const [movedHabit] = habits.splice(sourceIndex, 1);
+  let insertIndex = habits.findIndex((habit) => habit.id === targetId);
+  if (insertIndex === -1) return;
+  if (placement === "after") insertIndex += 1;
+
+  habits.splice(insertIndex, 0, movedHabit);
+  state.habits = habits;
+  saveState();
+  render();
+}
+
+function clearHabitDropIndicators() {
+  document.querySelectorAll(".habit-drop-before, .habit-drop-after").forEach((el) => {
+    el.classList.remove("habit-drop-before", "habit-drop-after");
+  });
+}
+
+function clearHabitReorderState() {
+  if (reorderPressTimer) {
+    window.clearTimeout(reorderPressTimer);
+    reorderPressTimer = null;
+  }
+
+  document.removeEventListener("pointermove", handleHabitReorderPendingMove);
+  document.removeEventListener("pointermove", handleHabitReorderDragMove);
+  document.removeEventListener("pointerup", handleHabitReorderDrop);
+  document.removeEventListener("pointerup", clearHabitReorderState);
+  document.removeEventListener("pointercancel", clearHabitReorderState);
+
+  if (reorderDrag?.sourceEl) {
+    reorderDrag.sourceEl.classList.remove("habit-dragging");
+  }
+
+  clearHabitDropIndicators();
+  document.body.classList.remove("habit-reorder-active");
+  reorderPending = null;
+  reorderDrag = null;
 }
 
 // ── Analysis ──────────────────────────────────────────────────────────────────
@@ -860,12 +1001,8 @@ function average(list, habitCount) {
   return list.reduce((s, v) => s + v / habitCount, 0) / list.length;
 }
 
-function isDayLocked(habitChecks, habits, dayIndex) {
-  if (!isPastDayInViewedMonth(dayIndex)) return false;
-  return habits.every((habit) => {
-    const checks = habitChecks[habit.id];
-    return !Array.isArray(checks) || !checks[dayIndex];
-  });
+function isCellLocked(checked, dayIndex) {
+  return !checked && isPastDayInViewedMonth(dayIndex);
 }
 
 function isPastDayInViewedMonth(dayIndex) {
