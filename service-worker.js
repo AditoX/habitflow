@@ -1,8 +1,7 @@
-const STATIC_CACHE = "habitflow-static-v1";
-const HTML_CACHE = "habitflow-html-v1";
+const STATIC_CACHE = "habitflow-static-v2";
+const HTML_CACHE = "habitflow-html-v2";
 
 const APP_SHELL = [
-  "/",
   "/index.html",
   "/auth.html",
   "/dashboard.html",
@@ -56,14 +55,27 @@ self.addEventListener("fetch", (event) => {
 async function networkFirstPage(request) {
   const cache = await caches.open(HTML_CACHE);
   try {
-    const response = await fetch(request);
-    cache.put(request, response.clone());
+    const response = await fetch(request, { cache: "no-store" });
+    if (response.ok) {
+      cache.put(request, response.clone());
+      return response;
+    }
+
+    const cachedResponse = (await cache.match(request))
+      || (await caches.match("/index.html"))
+      || (await caches.match("/dashboard.html"))
+      || (await caches.match("/auth.html"));
+
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+
     return response;
   } catch {
     return (await cache.match(request))
-      || (await caches.match(request))
+      || (await caches.match("/index.html"))
       || (await caches.match("/dashboard.html"))
-      || (await caches.match("/index.html"));
+      || (await caches.match("/auth.html"));
   }
 }
 
