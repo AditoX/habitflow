@@ -13,10 +13,9 @@ const APP_SHELL = [
   "/src/css/dashboard.css",
   "/src/js/landing.js",
   "/src/js/tracker.js",
-  "/src/js/pwa.js",
   "/src/js/firebase-config.js",
-  "/public/icons/icon.svg",
-  "/public/icons/icon-maskable.svg"
+  "/icons/icon.svg",
+  "/icons/icon-maskable.svg"
 ];
 
 self.addEventListener("install", (event) => {
