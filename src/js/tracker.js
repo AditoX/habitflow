@@ -684,6 +684,7 @@ function startHabitReorderDrag() {
   document.body.classList.add("habit-reorder-active");
 
   document.removeEventListener("pointermove", handleHabitReorderPendingMove);
+  document.removeEventListener("pointerup", clearHabitReorderState);
   document.addEventListener("pointermove", handleHabitReorderDragMove, { passive: false });
   document.addEventListener("pointerup", handleHabitReorderDrop);
   document.addEventListener("pointercancel", clearHabitReorderState);
@@ -733,6 +734,7 @@ function moveHabitToPosition(habitId, targetId, placement) {
   let insertIndex = habits.findIndex((habit) => habit.id === targetId);
   if (insertIndex === -1) return;
   if (placement === "after") insertIndex += 1;
+  insertIndex = Math.max(0, Math.min(insertIndex, habits.length));
 
   habits.splice(insertIndex, 0, movedHabit);
   state.habits = habits;
