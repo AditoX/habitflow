@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "rewrites": [
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/manifest.webmanifest", "destination": "/src/manifest.webmanifest" },
-    { "source": "/service-worker.js", "destination": "/src/js/service-worker.js" },
-    { "source": "/icons/icon.svg", "destination": "/src/icons/icon.svg" },
-    { "source": "/icons/icon-maskable.svg", "destination": "/src/icons/icon-maskable.svg" },
-    { "source": "/dashboard", "destination": "/dashboard.html" },
-    { "source": "/auth",      "destination": "/auth.html" }
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "routes": [
+    { "src": "/manifest.webmanifest", "dest": "/src/manifest.webmanifest" },
+    { "src": "/service-worker.js", "dest": "/src/js/service-worker.js" },
+    { "src": "/icons/icon.svg", "dest": "/src/icons/icon.svg" },
+    { "src": "/icons/icon-maskable.svg", "dest": "/src/icons/icon-maskable.svg" },
+    { "handle": "filesystem" }
   ],
   "headers": [
     {
