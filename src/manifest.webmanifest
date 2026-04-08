@@ -1,0 +1,25 @@
+{
+  "name": "Habitflow",
+  "short_name": "Habitflow",
+  "description": "A focused habit tracker with a monthly dashboard, history, and mobile-friendly progress tracking.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b1018",
+  "theme_color": "#0b1018",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/src/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/src/icons/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
