@@ -1,6 +1,7 @@
 {
   "version": 2,
   "rewrites": [
+    { "source": "/", "destination": "/index.html" },
     { "source": "/manifest.webmanifest", "destination": "/src/manifest.webmanifest" },
     { "source": "/service-worker.js", "destination": "/src/js/service-worker.js" },
     { "source": "/icons/icon.svg", "destination": "/src/icons/icon.svg" },
