@@ -11,17 +11,103 @@
   <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/icons/icon.svg" />
   <title>Dashboard — Habitflow</title>
+  <!-- OpenGraph / Social preview -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://habitflow.app/dashboard" />
+  <meta property="og:title"       content="Dashboard — Habitflow" />
+  <meta property="og:description" content="Your personal habit dashboard. Track streaks, review history, and build momentum month over month." />
+  <meta property="og:image"       content="https://habitflow.app/icons/og-image.png" />
+  <meta property="og:site_name"   content="Habitflow" />
+  <meta name="twitter:card"       content="summary_large_image" />
+  <meta name="twitter:title"      content="Dashboard — Habitflow" />
+  <meta name="twitter:description" content="Your personal habit dashboard. Track streaks, review history, and build momentum month over month." />
+  <meta name="twitter:image"      content="https://habitflow.app/icons/og-image.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="src/css/tracker.css" />
   <link rel="stylesheet" href="src/css/dashboard.css" />
+  <style>
+    /* ── Accessibility: global keyboard focus ring ── */
+    :focus-visible {
+      outline: 2px solid #6ee7b7;
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* ── Skeleton loader base ── */
+    @keyframes skeleton-shimmer {
+      0%   { background-position: -600px 0; }
+      100% { background-position:  600px 0; }
+    }
+    .skeleton {
+      border-radius: 6px;
+      background: linear-gradient(
+        90deg,
+        rgba(255,255,255,0.04) 25%,
+        rgba(255,255,255,0.09) 50%,
+        rgba(255,255,255,0.04) 75%
+      );
+      background-size: 600px 100%;
+      animation: skeleton-shimmer 1.4s ease infinite;
+    }
+
+    /* ── Skeleton dashboard shell (shown while auth loads) ── */
+    .skeleton-shell {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 16px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    .skeleton-sidebar { display: flex; flex-direction: column; gap: 12px; }
+    .skeleton-sidebar .sk-block { border-radius: 10px; }
+    .skeleton-main { display: flex; flex-direction: column; gap: 12px; }
+    .skeleton-main .sk-row { display: flex; gap: 12px; }
+    .skeleton-main .sk-block { border-radius: 10px; flex: 1; }
+
+    /* Hide skeleton once app is ready */
+    #skeletonShell { display: block; }
+    #appShell[style*="display: none"] ~ #skeletonShell,
+    #appShell[style=""] ~ #skeletonShell,
+    .skeleton-hidden { display: none !important; }
+
+    /* ── Auth guard: no layout shift ── */
+    .auth-guard {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #0b1018;
+      display: flex; align-items: center; justify-content: center;
+    }
+  </style>
 </head>
 <body>
 
   <!-- Auth guard overlay -->
-  <div id="authGuard" class="auth-guard">
+  <div id="authGuard" class="auth-guard" role="status" aria-label="Checking authentication…">
     <div class="guard-spinner"></div>
+  </div>
+
+  <!-- Skeleton loader: prevents CLS during Firestore data fetch -->
+  <div id="skeletonShell" class="skeleton-shell" aria-hidden="true">
+    <div class="skeleton-sidebar">
+      <div class="skeleton sk-block" style="height:160px"></div>
+      <div class="skeleton sk-block" style="height:120px"></div>
+      <div class="skeleton sk-block" style="height:200px"></div>
+      <div class="skeleton sk-block" style="height:80px"></div>
+    </div>
+    <div class="skeleton-main">
+      <div class="sk-row">
+        <div class="skeleton sk-block" style="height:200px; flex:2"></div>
+        <div class="skeleton sk-block" style="height:200px; flex:1"></div>
+        <div class="skeleton sk-block" style="height:200px; flex:1"></div>
+      </div>
+      <div class="skeleton sk-block" style="height:260px"></div>
+      <div class="sk-row">
+        <div class="skeleton sk-block" style="height:100px; flex:2"></div>
+        <div class="skeleton sk-block" style="height:100px; flex:1"></div>
+      </div>
+    </div>
   </div>
 
   <div class="page-shell" id="appShell" style="display:none">
@@ -33,7 +119,7 @@
         <div class="dash-nav-right">
           <span class="dash-user-name" id="dashUserName"></span>
           <div class="dash-avatar" id="dashAvatar"></div>
-          <button class="dash-signout" id="signOutBtn" title="Sign out">
+          <button class="dash-signout" id="signOutBtn" title="Sign out" aria-label="Sign out of Habitflow">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
             </svg>
@@ -200,6 +286,7 @@
       }
       currentUser = user;
       document.getElementById("authGuard").style.display = "none";
+      document.getElementById("skeletonShell").style.display = "none";
       document.getElementById("appShell").style.display = "";
 
       // Set avatar/name

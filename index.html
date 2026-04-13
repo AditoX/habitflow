@@ -12,10 +12,66 @@
   <link rel="apple-touch-icon" href="/icons/icon.svg" />
   <title>Habitflow — Build discipline like a product</title>
   <meta name="description" content="A premium monthly habit tracker for indie builders. Dark mode, animated insights, and a dashboard that feels like momentum." />
+
+  <!-- OpenGraph / Social preview -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://habitflow.app/" />
+  <meta property="og:title"       content="Habitflow — Build discipline like a product" />
+  <meta property="og:description" content="A premium monthly habit tracker for indie builders. Dark mode, animated insights, and a dashboard that feels like momentum." />
+  <meta property="og:image"       content="https://habitflow.app/icons/og-image.png" />
+  <meta property="og:image:width"  content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name"   content="Habitflow" />
+
+  <!-- Twitter / X card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Habitflow — Build discipline like a product" />
+  <meta name="twitter:description" content="A premium monthly habit tracker for indie builders. Dark mode, animated insights, and a dashboard that feels like momentum." />
+  <meta name="twitter:image"       content="https://habitflow.app/icons/og-image.png" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="src/css/landing.css" />
+  <style>
+    /* ── Accessibility: global keyboard focus ring ── */
+    :focus-visible {
+      outline: 2px solid #6ee7b7;
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* ── CTA visual hierarchy: hero primary button ── */
+    .btn-hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #6ee7b7 0%, #3b82f6 100%);
+      color: #0b1018;
+      box-shadow: 0 0 28px rgba(110, 231, 183, 0.35), 0 4px 16px rgba(0,0,0,0.3);
+      transition: box-shadow 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+      position: relative;
+    }
+    .btn-hero-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 44px rgba(110, 231, 183, 0.5), 0 8px 24px rgba(0,0,0,0.4);
+      filter: brightness(1.08);
+    }
+    .btn-hero-cta:active {
+      transform: translateY(0);
+    }
+    .btn-primary-arrow {
+      display: inline-block;
+      transition: transform 0.2s ease;
+    }
+    .btn-hero-cta:hover .btn-primary-arrow {
+      transform: translateX(4px);
+    }
+  </style>
 </head>
 <body>
 
@@ -25,7 +81,7 @@
       <div class="nav-links">
         <a href="#features">Features</a>
         <a href="#how">How it works</a>
-        <a href="/auth" class="nav-cta">Get started</a>
+        <a href="/auth" class="nav-cta" aria-label="Get started with Habitflow">Get started</a>
       </div>
     </div>
   </nav>
@@ -50,8 +106,11 @@
         not another spreadsheet gathering dust.
       </p>
       <div class="hero-actions">
-        <a href="/auth" class="btn-primary">Start tracking free</a>
-        <a href="#features" class="btn-ghost">See how it works</a>
+        <a href="/auth" class="btn-primary btn-hero-cta" aria-label="Start tracking your habits for free">
+          <span class="btn-primary-text">Start tracking free</span>
+          <span class="btn-primary-arrow" aria-hidden="true">→</span>
+        </a>
+        <a href="#features" class="btn-ghost" aria-label="See how Habitflow works">See how it works</a>
       </div>
       <div class="hero-stats">
         <div class="stat"><strong>12</strong><span>Habit slots</span></div>
@@ -161,7 +220,7 @@
   <section class="cta-band">
     <div class="section-inner cta-inner">
       <h2>Ready to build discipline?</h2>
-      <a href="/auth" class="btn-primary btn-large">Start for free →</a>
+      <a href="/auth" class="btn-primary btn-large" aria-label="Start tracking your habits for free">Start for free →</a>
     </div>
   </section>
 

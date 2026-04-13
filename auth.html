@@ -11,10 +11,28 @@
   <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/icons/icon.svg" />
   <title>Sign in — Habitflow</title>
+  <!-- OpenGraph / Social preview -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://habitflow.app/auth" />
+  <meta property="og:title"       content="Sign in — Habitflow" />
+  <meta property="og:description" content="Sign in to your Habitflow account and start building better habits today." />
+  <meta property="og:image"       content="https://habitflow.app/icons/og-image.png" />
+  <meta property="og:site_name"   content="Habitflow" />
+  <meta name="twitter:card"       content="summary_large_image" />
+  <meta name="twitter:title"      content="Sign in — Habitflow" />
+  <meta name="twitter:description" content="Sign in to your Habitflow account and start building better habits today." />
+  <meta name="twitter:image"      content="https://habitflow.app/icons/og-image.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="src/css/auth.css" />
+  <style>
+    :focus-visible {
+      outline: 2px solid #6ee7b7;
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
 
@@ -39,7 +57,7 @@
 
       <div id="authError" class="auth-error" style="display:none"></div>
 
-      <button class="btn-google" id="googleSignIn">
+      <button class="btn-google" id="googleSignIn" aria-label="Continue with Google — sign in to Habitflow">
         <svg width="20" height="20" viewBox="0 0 18 18" fill="none">
           <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
           <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/>
