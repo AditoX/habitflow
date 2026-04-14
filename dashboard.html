@@ -241,16 +241,6 @@
               <button class="subtle-btn add-habit-btn" id="addHabitButton" type="button">Add habit</button>
             </div>
 
-            <div class="panel mood-panel">
-              <div class="mini-field">
-                <span>Mood</span>
-                <strong id="moodValue">Steady</strong>
-              </div>
-              <div class="mini-field">
-                <span>Motivation</span>
-                <strong id="motivationValue">76%</strong>
-              </div>
-            </div>
           </aside>
 
           <section class="main-rail">
@@ -367,6 +357,22 @@
 
             <div id="habitEditorList" style="display:none"></div>
           </section>
+
+          <!-- Right rail: Mood & Motivation -->
+          <aside class="right-rail">
+            <div class="panel right-rail-panel mood-card">
+              <div class="panel-title">Mood</div>
+              <strong class="right-rail-value" id="moodValue">Steady</strong>
+            </div>
+            <div class="panel right-rail-panel motivation-card">
+              <div class="panel-title">Motivation</div>
+              <strong class="right-rail-value" id="motivationValue">76%</strong>
+            </div>
+            <div class="panel right-rail-panel tip-card">
+              <div class="panel-title">Daily Tip</div>
+              <p class="right-rail-tip">Small consistent actions beat occasional perfection.</p>
+            </div>
+          </aside>
         </section>
       </section>
 

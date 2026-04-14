@@ -211,3 +211,76 @@ html, body {
   .main-rail  { height: auto; overflow: visible; }
   .habits-panel .habit-list { max-height: none; overflow: visible; }
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RIGHT RAIL — Mood & Motivation sidebar
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Expand tracker-layout to 3 columns: left | main | right */
+.tracker-layout {
+  grid-template-columns: 240px minmax(0, 1fr) 160px;
+}
+
+/* Right rail mirrors left-rail scroll behaviour */
+.right-rail {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 2px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(151,164,186,0.15) transparent;
+}
+.right-rail::-webkit-scrollbar { width: 4px; }
+.right-rail::-webkit-scrollbar-track { background: transparent; }
+.right-rail::-webkit-scrollbar-thumb {
+  background: rgba(151,164,186,0.18);
+  border-radius: 4px;
+}
+
+/* Individual right-rail cards */
+.right-rail-panel {
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.right-rail-value {
+  font-family: "Sora", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.mood-card .right-rail-value   { color: #8fb8a2; }
+.motivation-card .right-rail-value { color: #8ea2bd; }
+
+.right-rail-tip {
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* ── Responsive: hide right rail on smaller screens ── */
+@media (max-width: 1220px) {
+  .tracker-layout {
+    grid-template-columns: 1fr;
+  }
+  .right-rail {
+    height: auto;
+    overflow: visible;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .right-rail {
+    grid-template-columns: 1fr;
+  }
+}
