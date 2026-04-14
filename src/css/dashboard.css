@@ -115,3 +115,99 @@
     gap: 8px;
   }
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SIDEBAR OVERFLOW FIX
+   Locks the layout to viewport height so the left-rail never escapes past
+   the bottom edge. Each rail scrolls independently inside the container.
+   Overrides tracker.css's align-items:start / position:sticky on left-rail.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* 1. Lock html/body to viewport — no outer page scroll on dashboard */
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 2. Page shell fills the full viewport vertically */
+.page-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* 3. page-stack fills remaining height below the sticky navbar (52px) */
+.page-stack {
+  flex: 1 1 0;
+  min-height: 0;          /* critical: lets flex child shrink below content size */
+  overflow: hidden;
+  /* keep existing width/margin/padding from dashboard.css, just override height */
+  padding-bottom: 0;
+}
+
+/* 4. tracker-shell and tracker-layout form the fixed-height two-column grid */
+.tracker-shell {
+  height: 100%;
+  overflow: hidden;
+}
+
+.tracker-layout {
+  height: 100%;
+  align-items: stretch;   /* override tracker.css align-items: start */
+  overflow: hidden;
+}
+
+/* 5. Left rail: no longer sticky — instead it scrolls internally */
+.left-rail {
+  position: static;       /* override tracker.css position: sticky */
+  align-self: auto;       /* override tracker.css align-self: start */
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* thin translucent scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(151,164,186,0.15) transparent;
+}
+.left-rail::-webkit-scrollbar { width: 4px; }
+.left-rail::-webkit-scrollbar-track { background: transparent; }
+.left-rail::-webkit-scrollbar-thumb {
+  background: rgba(151,164,186,0.18);
+  border-radius: 4px;
+}
+
+/* 6. Main rail scrolls independently */
+.main-rail {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(151,164,186,0.15) transparent;
+}
+.main-rail::-webkit-scrollbar { width: 4px; }
+.main-rail::-webkit-scrollbar-track { background: transparent; }
+.main-rail::-webkit-scrollbar-thumb {
+  background: rgba(151,164,186,0.18);
+  border-radius: 4px;
+}
+
+/* 7. Habit list inside sidebar — own scroll cap so it never pushes mood panel off */
+.habits-panel .habit-list {
+  max-height: 240px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(151,164,186,0.1) transparent;
+}
+
+/* 8. Responsive: on mobile the layout stacks, so restore natural scroll */
+@media (max-width: 1220px) {
+  html, body { overflow: auto; height: auto; }
+  .page-shell { height: auto; overflow: visible; }
+  .page-stack { flex: none; min-height: auto; overflow: visible; }
+  .tracker-shell { height: auto; overflow: visible; }
+  .tracker-layout { height: auto; align-items: start; overflow: visible; }
+  .left-rail  { height: auto; overflow: visible; position: static; }
+  .main-rail  { height: auto; overflow: visible; }
+  .habits-panel .habit-list { max-height: none; overflow: visible; }
+}
