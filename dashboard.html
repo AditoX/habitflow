@@ -79,6 +79,86 @@
       background: #0b1018;
       display: flex; align-items: center; justify-content: center;
     }
+    /* ── Primary panel header ── */
+    .primary-panel { padding-bottom: 20px; }
+    .primary-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .primary-heading { margin: 0; font-size: 1.4rem; }
+    .panel-kicker { margin: 0 0 2px; font-size: 0.7rem; opacity: 0.5; text-transform: uppercase; letter-spacing: .08em; }
+
+    /* ── Quick stats strip ── */
+    .quick-stats {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 10px 20px;
+    }
+    .qs-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .qs-item strong { font-size: 1.2rem; font-weight: 700; color: #6ee7b7; line-height: 1; }
+    .qs-item span { font-size: 0.65rem; opacity: 0.5; text-transform: uppercase; letter-spacing: .06em; }
+    .qs-divider { width: 1px; height: 28px; background: rgba(255,255,255,0.1); }
+
+    /* ── Tab nav ── */
+    .tabs-panel { padding: 0; overflow: hidden; }
+    .dash-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 0 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .dash-tabs::-webkit-scrollbar { display: none; }
+    .dash-tab {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.45);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 14px 18px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .dash-tab:hover { color: rgba(255,255,255,0.75); }
+    .dash-tab--active {
+      color: #6ee7b7;
+      border-bottom-color: #6ee7b7;
+    }
+
+    /* ── Tab panes ── */
+    .tab-pane { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+    .tab-pane[hidden] { display: none; }
+    .tab-pane--active { display: flex; }
+
+    /* ── Charts grid inside tab ── */
+    .tab-charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 16px;
+      align-items: start;
+    }
+    .tab-analysis-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 900px) {
+      .tab-charts-grid, .tab-analysis-grid { grid-template-columns: 1fr; }
+      .primary-panel-header { flex-direction: column; align-items: flex-start; }
+    }
   </style>
 </head>
 <body>
@@ -175,87 +255,114 @@
 
           <section class="main-rail">
 
-            <div class="middle-row">
-              <div class="panel grid-panel">
-                <div class="calendar-grid" id="calendarGrid"></div>
-              </div>
-              <div class="right-panel-stack">
-                <div class="panel analysis-panel">
-                  <div class="panel-title">Analysis</div>
-                  <div class="analysis-table">
-                    <div class="analysis-head">
-                      <span>Goal</span><span>Actual</span><span>Left</span><span>Progress</span><span>%</span>
-                    </div>
-                    <div id="analysisBody"></div>
+            <!-- Primary action: calendar always visible -->
+            <div class="panel grid-panel primary-panel">
+              <div class="primary-panel-header">
+                <div>
+                  <p class="panel-kicker">Check off today&#39;s habits</p>
+                  <h2 class="primary-heading">This Month</h2>
+                </div>
+                <div class="quick-stats">
+                  <div class="qs-item">
+                    <strong id="completionPercent">0%</strong>
+                    <span>done</span>
+                  </div>
+                  <div class="qs-divider"></div>
+                  <div class="qs-item">
+                    <strong id="goalCompleted">0</strong>
+                    <span>completed</span>
+                  </div>
+                  <div class="qs-divider"></div>
+                  <div class="qs-item">
+                    <strong id="goalLeft">0</strong>
+                    <span>left</span>
                   </div>
                 </div>
-                <div class="panel streak-panel">
-                  <div class="panel-title">Top 10 Daily Habit</div>
-                  <ol class="streak-list" id="streakList"></ol>
-                </div>
               </div>
+              <div class="calendar-grid" id="calendarGrid"></div>
             </div>
 
-            <div class="top-row">
-              <div class="panel chart-panel">
-                <div class="panel-header">
-                  <div><p class="panel-kicker">Overview</p><h2>Daily Progress</h2></div>
-                  <span class="panel-stat" id="dailyAverageLabel">0% avg</span>
-                </div>
-                <div class="daily-chart" id="dailyChart"></div>
-                <div class="chart-axis" id="dailyAxis"></div>
-              </div>
-              <div class="panel chart-panel weekly-panel">
-                <div class="panel-header">
-                  <div><p class="panel-kicker">Summary</p><h2>Weekly Progress</h2></div>
-                  <span class="panel-stat" id="bestWeekLabel">Week 1</span>
-                </div>
-                <div class="weekly-chart" id="weeklyChart"></div>
-              </div>
-              <div class="stats-column">
-                <div class="panel goal-panel">
-                  <div class="panel-title">Goal</div>
-                  <div class="goal-grid">
-                    <div><span>Target</span><strong id="goalTarget">0</strong></div>
-                    <div><span>Completed</span><strong id="goalCompleted">0</strong></div>
-                    <div><span>Left</span><strong id="goalLeft">0</strong></div>
+            <!-- Secondary content behind tabs -->
+            <div class="panel tabs-panel">
+              <nav class="dash-tabs" role="tablist" aria-label="Dashboard sections">
+                <button class="dash-tab dash-tab--active" role="tab" aria-selected="true"  aria-controls="tab-charts"   id="tbtn-charts">&#128200; Progress</button>
+                <button class="dash-tab"                  role="tab" aria-selected="false" aria-controls="tab-analysis" id="tbtn-analysis">&#127919; Analysis</button>
+                <button class="dash-tab"                  role="tab" aria-selected="false" aria-controls="tab-history"  id="tbtn-history">&#128197; History</button>
+                <button class="dash-tab"                  role="tab" aria-selected="false" aria-controls="tab-journal"  id="tbtn-journal">&#128221; Journal</button>
+              </nav>
+
+              <div class="tab-pane tab-pane--active" id="tab-charts" role="tabpanel" aria-labelledby="tbtn-charts">
+                <div class="tab-charts-grid">
+                  <div class="panel chart-panel">
+                    <div class="panel-header">
+                      <div><p class="panel-kicker">Overview</p><h2>Daily Progress</h2></div>
+                      <span class="panel-stat" id="dailyAverageLabel">0% avg</span>
+                    </div>
+                    <div class="daily-chart" id="dailyChart"></div>
+                    <div class="chart-axis" id="dailyAxis"></div>
                   </div>
-                </div>
-                <div class="panel donut-panel">
-                  <div class="panel-title">Overall Stats</div>
-                  <div class="donut-wrap">
-                    <div class="donut-chart" id="donutChart">
-                      <div class="donut-hole">
-                        <strong id="completionPercent">0%</strong>
-                        <span>done</span>
+                  <div class="panel chart-panel weekly-panel">
+                    <div class="panel-header">
+                      <div><p class="panel-kicker">Summary</p><h2>Weekly Progress</h2></div>
+                      <span class="panel-stat" id="bestWeekLabel">Week 1</span>
+                    </div>
+                    <div class="weekly-chart" id="weeklyChart"></div>
+                  </div>
+                  <div class="panel donut-panel">
+                    <div class="panel-title">Overall Stats</div>
+                    <div class="donut-wrap">
+                      <div class="donut-chart" id="donutChart">
+                        <div class="donut-hole">
+                          <strong id="donutPercent">0%</strong>
+                          <span>done</span>
+                        </div>
+                      </div>
+                      <div class="donut-legend">
+                        <div><span class="legend-swatch complete"></span>Complete</div>
+                        <div><span class="legend-swatch remaining"></span>Remaining</div>
                       </div>
                     </div>
-                    <div class="donut-legend">
-                      <div><span class="legend-swatch complete"></span>Complete</div>
-                      <div><span class="legend-swatch remaining"></span>Remaining</div>
+                  </div>
+                </div>
+                <div class="panel mood-strip-panel" style="margin-top:0">
+                  <div class="panel-title">Monthly Pulse</div>
+                  <div class="mood-strip" id="moodStrip"></div>
+                </div>
+              </div>
+
+              <div class="tab-pane" id="tab-analysis" role="tabpanel" aria-labelledby="tbtn-analysis" hidden>
+                <div class="tab-analysis-grid">
+                  <div class="panel analysis-panel">
+                    <div class="panel-title">Habit Breakdown</div>
+                    <div class="analysis-table">
+                      <div class="analysis-head">
+                        <span>Goal</span><span>Actual</span><span>Left</span><span>Progress</span><span>%</span>
+                      </div>
+                      <div id="analysisBody"></div>
                     </div>
+                  </div>
+                  <div class="panel streak-panel">
+                    <div class="panel-title">Top 10 Daily Habit</div>
+                    <ol class="streak-list" id="streakList"></ol>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="bottom-row">
-              <div class="panel mood-strip-panel">
-                <div class="panel-title">Monthly Pulse</div>
-                <div class="mood-strip" id="moodStrip"></div>
+              <div class="tab-pane" id="tab-history" role="tabpanel" aria-labelledby="tbtn-history" hidden>
+                <div class="history-body" id="historyBody"></div>
               </div>
-              <div class="panel notes-panel">
-                <div class="panel-title">Journal</div>
+
+              <div class="tab-pane" id="tab-journal" role="tabpanel" aria-labelledby="tbtn-journal" hidden>
                 <label class="notes-field" for="notesInput">
                   <span>What's helping this month?</span>
-                  <textarea id="notesInput" rows="5" placeholder="Write wins, patterns, setbacks, or reminders here..."></textarea>
+                  <textarea id="notesInput" rows="8" placeholder="Write wins, patterns, setbacks, or reminders here..."></textarea>
                 </label>
               </div>
             </div>
 
-            <div class="panel history-panel">
-              <div class="panel-title">Month History</div>
-              <div class="history-body" id="historyBody"></div>
+            <!-- Hidden spans still needed by tracker.js -->
+            <div style="display:none">
+              <span id="goalTarget">0</span>
             </div>
 
             <div id="habitEditorList" style="display:none"></div>
@@ -344,6 +451,29 @@
   </script>
 
   <script src="src/js/tracker.js"></script>
+
+  <script>
+    // Tab switching
+    document.querySelectorAll(".dash-tab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        // Deactivate all
+        document.querySelectorAll(".dash-tab").forEach(b => {
+          b.classList.remove("dash-tab--active");
+          b.setAttribute("aria-selected", "false");
+        });
+        document.querySelectorAll(".tab-pane").forEach(p => {
+          p.classList.remove("tab-pane--active");
+          p.hidden = true;
+        });
+        // Activate clicked
+        btn.classList.add("dash-tab--active");
+        btn.setAttribute("aria-selected", "true");
+        const pane = document.getElementById(btn.getAttribute("aria-controls"));
+        if (pane) { pane.classList.add("tab-pane--active"); pane.hidden = false; }
+      });
+    });
+  </script>
+
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
