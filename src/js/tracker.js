@@ -28,12 +28,6 @@ const habitPalette = [
 const storagePrefix = "habit-tracker-dashboard";
 const storageVersion = "v3-clean"; // bump this to force a reset
 
-// Auto-reset if stored version doesn't match (wipes old seeded data)
-if (localStorage.getItem(storagePrefix + "-version") !== storageVersion) {
-  localStorage.removeItem(storagePrefix);
-  localStorage.setItem(storagePrefix + "-version", storageVersion);
-}
-
 const state = {
   month: 0,
   year: 2026,
@@ -129,13 +123,49 @@ function bindEvents() {
   addHabitButton.addEventListener("click", () => addHabit());
 }
 
+function getTrackerStorage() {
+  const scopedStorage = window.__habitflowStorage;
+  if (scopedStorage && typeof scopedStorage.getDataKey === "function" && typeof scopedStorage.getVersionKey === "function") {
+    return scopedStorage;
+  }
+
+  return {
+    prefix: storagePrefix,
+    version: storageVersion,
+    getDataKey() {
+      return storagePrefix;
+    },
+    getVersionKey() {
+      return `${storagePrefix}-version`;
+    },
+  };
+}
+
+function getStorageKey() {
+  return getTrackerStorage().getDataKey();
+}
+
+function getStorageVersionKey() {
+  return getTrackerStorage().getVersionKey();
+}
+
+function syncStorageVersion() {
+  const versionKey = getStorageVersionKey();
+  const dataKey = getStorageKey();
+  if (localStorage.getItem(versionKey) !== storageVersion) {
+    localStorage.removeItem(dataKey);
+    localStorage.setItem(versionKey, storageVersion);
+  }
+}
+
 function loadState() {
+  syncStorageVersion();
   const today = new Date();
   state.month = today.getMonth();
   state.year = today.getFullYear();
   state.habits = cloneDefaultHabits();
 
-  const saved = localStorage.getItem(storagePrefix);
+  const saved = localStorage.getItem(getStorageKey());
   if (saved) {
     const parsed = JSON.parse(saved);
     state.month = Number.isInteger(parsed.month) ? parsed.month : state.month;
@@ -152,7 +182,8 @@ function loadState() {
 }
 
 function saveState() {
-  localStorage.setItem(storagePrefix, JSON.stringify(state));
+  localStorage.setItem(getStorageKey(), JSON.stringify(state));
+  localStorage.setItem(getStorageVersionKey(), storageVersion);
 }
 
 function cloneDefaultHabits() { return defaultHabits.map((h) => ({ ...h })); }
@@ -332,6 +363,10 @@ function render() {
   const moodScore = average(dailyTotals, habits.length);
   moodValue.textContent = moodDescriptor(moodScore);
   motivationValue.textContent = `${Math.round(moodScore * 100)}%`;
+
+  if (window.__habitflowTutorial?.refresh) {
+    window.__habitflowTutorial.refresh();
+  }
 }
 
 // ── Charts ────────────────────────────────────────────────────────────────────

@@ -155,9 +155,131 @@
       grid-template-columns: 1fr 1fr;
       gap: 16px;
     }
+
+    /* Tutorial */
+    body.tutorial-open {
+      overscroll-behavior: contain;
+    }
+    .tutorial-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      pointer-events: none;
+    }
+    .tutorial-overlay[hidden] {
+      display: none;
+    }
+    .tutorial-overlay--active {
+      pointer-events: auto;
+    }
+    .tutorial-overlay::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(6, 10, 16, 0.76);
+      opacity: 0;
+      transition: opacity 180ms ease;
+    }
+    .tutorial-overlay--no-target::before {
+      opacity: 1;
+    }
+    .tutorial-spotlight {
+      position: absolute;
+      border-radius: 24px;
+      border: 1px solid rgba(110, 231, 183, 0.58);
+      background: transparent;
+      box-shadow:
+        0 0 0 9999px rgba(6, 10, 16, 0.76),
+        0 18px 40px rgba(0, 0, 0, 0.35),
+        inset 0 0 0 1px rgba(255,255,255,0.08);
+      transition:
+        top 220ms ease,
+        left 220ms ease,
+        width 220ms ease,
+        height 220ms ease,
+        opacity 180ms ease;
+      pointer-events: none;
+    }
+    .tutorial-card {
+      position: absolute;
+      width: min(360px, calc(100vw - 24px));
+      padding: 18px 18px 16px;
+      border-radius: 22px;
+      border: 1px solid rgba(151, 164, 186, 0.18);
+      background: linear-gradient(180deg, rgba(19, 25, 38, 0.98), rgba(14, 19, 29, 0.96));
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+      pointer-events: auto;
+      transition: top 220ms ease, left 220ms ease;
+    }
+    .tutorial-step {
+      margin: 0 0 10px;
+      color: rgba(152, 164, 184, 0.92);
+      font-size: 0.72rem;
+      font-family: "Sora", sans-serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .tutorial-title {
+      margin: 0;
+      font-family: "Sora", sans-serif;
+      font-size: 1.2rem;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+    }
+    .tutorial-text {
+      margin: 10px 0 0;
+      color: #b7c4d8;
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+    .tutorial-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .tutorial-actions-left,
+    .tutorial-actions-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .tutorial-btn {
+      border: 1px solid rgba(151, 164, 186, 0.18);
+      border-radius: 999px;
+      background: rgba(21, 28, 42, 0.72);
+      color: var(--text);
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+    .tutorial-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(151, 164, 186, 0.3);
+    }
+    .tutorial-btn--primary {
+      background: linear-gradient(135deg, #8fb8a2, #b7c4d8);
+      color: #111827;
+      border-color: transparent;
+      font-weight: 700;
+    }
+    .tutorial-btn[disabled] {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .tutorial-trigger {
+      margin-top: 12px;
+      width: 100%;
+      justify-content: center;
+    }
     @media (max-width: 900px) {
       .tab-charts-grid, .tab-analysis-grid { grid-template-columns: 1fr; }
       .primary-panel-header { flex-direction: column; align-items: flex-start; }
+      .tutorial-card {
+        width: calc(100vw - 24px);
+      }
     }
   </style>
 </head>
@@ -371,12 +493,31 @@
             <div class="panel right-rail-panel tip-card">
               <div class="panel-title">Daily Tip</div>
               <p class="right-rail-tip">Small consistent actions beat occasional perfection.</p>
+              <button class="subtle-btn tutorial-trigger" id="tutorialTrigger" type="button">Replay tutorial</button>
             </div>
           </aside>
         </section>
       </section>
 
     </main>
+  </div>
+
+  <div class="tutorial-overlay" id="tutorialOverlay" hidden>
+    <div class="tutorial-spotlight" id="tutorialSpotlight"></div>
+    <div class="tutorial-card" id="tutorialCard" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle" aria-describedby="tutorialText" tabindex="-1">
+      <p class="tutorial-step" id="tutorialStepLabel">Step 1 of 1</p>
+      <h2 class="tutorial-title" id="tutorialTitle">Welcome</h2>
+      <p class="tutorial-text" id="tutorialText"></p>
+      <div class="tutorial-actions">
+        <div class="tutorial-actions-left">
+          <button class="tutorial-btn" id="tutorialSkip" type="button">Skip</button>
+        </div>
+        <div class="tutorial-actions-right">
+          <button class="tutorial-btn" id="tutorialBack" type="button">Back</button>
+          <button class="tutorial-btn tutorial-btn--primary" id="tutorialNext" type="button">Next</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Firebase -->
@@ -389,15 +530,55 @@
     const app  = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db   = getFirestore(app);
+    const trackerStorage = (() => {
+      const prefix = "habit-tracker-dashboard";
+      const version = "v3-clean";
+
+      return {
+        prefix,
+        version,
+        scope: "",
+        getDataKey(uid = this.scope) {
+          return uid ? `${prefix}::${uid}` : prefix;
+        },
+        getVersionKey(uid = this.scope) {
+          return uid ? `${prefix}-version::${uid}` : `${prefix}-version`;
+        },
+        setScope(uid) {
+          this.scope = uid || "";
+          return this.scope;
+        },
+        clearLegacy() {
+          localStorage.removeItem(prefix);
+          localStorage.removeItem(`${prefix}-version`);
+        },
+      };
+    })();
 
     let currentUser = null;
+    const tutorialState = {
+      seen: false,
+      shouldAutoStart: false,
+      syncPromise: Promise.resolve(),
+    };
+
+    window.__habitflowTutorialState = {
+      get seen() {
+        return tutorialState.seen;
+      },
+      markSeen: markTutorialSeen,
+    };
+    window.__habitflowStorage = trackerStorage;
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
+        trackerStorage.setScope("");
         window.location.href = "/auth";
         return;
       }
       currentUser = user;
+      trackerStorage.setScope(user.uid);
+      trackerStorage.clearLegacy();
       document.getElementById("authGuard").style.display = "none";
       document.getElementById("skeletonShell").style.display = "none";
       document.getElementById("appShell").style.display = "";
@@ -410,6 +591,7 @@
       // Load user data from Firestore then init tracker
       await loadUserData(user.uid);
       window.__initTracker();
+      queueTutorialStart();
     });
 
     document.getElementById("signOutBtn").addEventListener("click", async () => {
@@ -419,12 +601,19 @@
     });
 
     async function loadUserData(uid) {
+      tutorialState.seen = false;
+      tutorialState.shouldAutoStart = false;
       try {
         const snap = await getDoc(doc(db, "users", uid));
         if (snap.exists()) {
           const data = snap.data();
-          localStorage.setItem("habit-tracker-dashboard", JSON.stringify(data.trackerState || {}));
-          localStorage.setItem("habit-tracker-dashboard-version", data.storageVersion || "");
+          localStorage.setItem(trackerStorage.getDataKey(uid), JSON.stringify(data.trackerState || {}));
+          localStorage.setItem(trackerStorage.getVersionKey(uid), trackerStorage.version);
+          tutorialState.seen = data.tutorialSeen === true;
+          const hasTrackerState = !!(data.trackerState && Object.keys(data.trackerState).length);
+          tutorialState.shouldAutoStart = !tutorialState.seen && !hasTrackerState;
+        } else {
+          tutorialState.shouldAutoStart = true;
         }
       } catch (e) {
         console.warn("Could not load from Firestore, using localStorage:", e);
@@ -433,16 +622,47 @@
 
     async function saveUserData(uid) {
       try {
-        const raw = localStorage.getItem("habit-tracker-dashboard");
-        if (!raw) return;
+        const raw = localStorage.getItem(trackerStorage.getDataKey(uid));
+        if (!raw && !tutorialState.seen) return;
         await setDoc(doc(db, "users", uid), {
-          trackerState: JSON.parse(raw),
-          storageVersion: localStorage.getItem("habit-tracker-dashboard-version") || "",
+          trackerState: raw ? JSON.parse(raw) : {},
+          storageVersion: trackerStorage.version,
+          tutorialSeen: tutorialState.seen,
           updatedAt: new Date().toISOString(),
-        });
+        }, { merge: true });
       } catch (e) {
         console.warn("Could not save to Firestore:", e);
       }
+    }
+
+    function queueTutorialStart() {
+      if (!tutorialState.shouldAutoStart || tutorialState.seen) return;
+      tutorialState.shouldAutoStart = false;
+
+      const launch = () => {
+        if (typeof window.__startHabitflowTutorial === "function") {
+          window.__startHabitflowTutorial({ auto: true });
+        } else {
+          requestAnimationFrame(launch);
+        }
+      };
+
+      requestAnimationFrame(launch);
+    }
+
+    async function markTutorialSeen() {
+      if (tutorialState.seen) return tutorialState.syncPromise;
+      tutorialState.seen = true;
+      if (!currentUser) return tutorialState.syncPromise;
+
+      tutorialState.syncPromise = setDoc(doc(db, "users", currentUser.uid), {
+        tutorialSeen: true,
+        updatedAt: new Date().toISOString(),
+      }, { merge: true }).catch((error) => {
+        console.warn("Could not persist tutorial state:", error);
+      });
+
+      return tutorialState.syncPromise;
     }
 
     // Auto-save to Firestore every 30s
@@ -459,25 +679,287 @@
   <script src="src/js/tracker.js"></script>
 
   <script>
-    // Tab switching
-    document.querySelectorAll(".dash-tab").forEach(btn => {
-      btn.addEventListener("click", () => {
-        // Deactivate all
-        document.querySelectorAll(".dash-tab").forEach(b => {
-          b.classList.remove("dash-tab--active");
-          b.setAttribute("aria-selected", "false");
-        });
-        document.querySelectorAll(".tab-pane").forEach(p => {
-          p.classList.remove("tab-pane--active");
-          p.hidden = true;
-        });
-        // Activate clicked
-        btn.classList.add("dash-tab--active");
-        btn.setAttribute("aria-selected", "true");
-        const pane = document.getElementById(btn.getAttribute("aria-controls"));
-        if (pane) { pane.classList.add("tab-pane--active"); pane.hidden = false; }
+    const dashboardTabs = Array.from(document.querySelectorAll(".dash-tab"));
+    const dashboardPanes = Array.from(document.querySelectorAll(".tab-pane"));
+
+    function setDashboardTab(tabIdOrButtonId) {
+      const normalizedId = String(tabIdOrButtonId || "").replace(/^tbtn-/, "");
+      const activeButton = document.getElementById(`tbtn-${normalizedId}`) || dashboardTabs[0];
+      if (!activeButton) return;
+
+      dashboardTabs.forEach((button) => {
+        button.classList.remove("dash-tab--active");
+        button.setAttribute("aria-selected", "false");
       });
+
+      dashboardPanes.forEach((pane) => {
+        pane.classList.remove("tab-pane--active");
+        pane.hidden = true;
+      });
+
+      activeButton.classList.add("dash-tab--active");
+      activeButton.setAttribute("aria-selected", "true");
+      const pane = document.getElementById(activeButton.getAttribute("aria-controls"));
+      if (pane) {
+        pane.classList.add("tab-pane--active");
+        pane.hidden = false;
+      }
+    }
+
+    function getActiveDashboardTab() {
+      return document.querySelector(".dash-tab--active")?.id.replace(/^tbtn-/, "") || "charts";
+    }
+
+    window.__setDashboardTab = setDashboardTab;
+    window.__getActiveDashboardTab = getActiveDashboardTab;
+
+    dashboardTabs.forEach((button) => {
+      button.addEventListener("click", () => setDashboardTab(button.id));
     });
+  </script>
+
+  <script>
+    (() => {
+      const overlay = document.getElementById("tutorialOverlay");
+      const spotlight = document.getElementById("tutorialSpotlight");
+      const card = document.getElementById("tutorialCard");
+      const stepLabel = document.getElementById("tutorialStepLabel");
+      const title = document.getElementById("tutorialTitle");
+      const text = document.getElementById("tutorialText");
+      const backButton = document.getElementById("tutorialBack");
+      const nextButton = document.getElementById("tutorialNext");
+      const skipButton = document.getElementById("tutorialSkip");
+      const triggerButton = document.getElementById("tutorialTrigger");
+
+      if (!overlay || !spotlight || !card || !stepLabel || !title || !text || !backButton || !nextButton || !skipButton) {
+        return;
+      }
+
+      const tutorialSteps = [
+        {
+          title: "Welcome to Habitflow",
+          text: "This quick tour shows you how to log habits, read your progress, and find the sections you'll actually use day to day.",
+        },
+        {
+          selector: ".primary-panel",
+          title: "This is your daily check-in board",
+          text: "The calendar is the heart of Habitflow. Open the dashboard, mark the habits you completed today, and your stats update instantly.",
+        },
+        {
+          selector: ".habits-panel",
+          title: "Start with your habit list",
+          text: "Your default habits live here. You can add new ones, edit targets, delete old ones, or drag to reorder them whenever your routine changes.",
+        },
+        {
+          selector: "#calendarGrid input[type='checkbox']:not([disabled]), #calendarGrid",
+          title: "Tap a square to log progress",
+          text: "Each open checkbox is a habit for a specific day. Check it when you finish the habit, and Habitflow turns that into momentum across the dashboard.",
+        },
+        {
+          selector: "#tbtn-charts",
+          tab: "charts",
+          title: "Progress turns your streaks into signal",
+          text: "Use the Progress tab to spot strong weeks, weak days, and your overall completion trend without digging through raw checkmarks.",
+        },
+        {
+          selector: "#tbtn-analysis",
+          tab: "analysis",
+          title: "Analysis shows what is working",
+          text: "This tab breaks habits down one by one, so you can see which routines are slipping and which ones are becoming automatic.",
+        },
+        {
+          selector: "#tbtn-history",
+          tab: "history",
+          title: "History keeps every month visible",
+          text: "Once you move into a new month, Habitflow saves the old one here. That makes it easy to compare consistency over time instead of guessing.",
+        },
+        {
+          selector: "#tbtn-journal",
+          tab: "journal",
+          title: "Journal the patterns behind the numbers",
+          text: "Use Journal for wins, setbacks, or reminders. The charts show what happened. The journal helps you remember why it happened.",
+        },
+        {
+          selector: "#tutorialTrigger",
+          title: "You can replay this tour anytime",
+          text: "If you ever want a refresher, use this button. Mood and Motivation on the right also update automatically as your month fills in.",
+        },
+      ];
+
+      let tutorialOpen = false;
+      let currentStepIndex = 0;
+      let restoreTab = "charts";
+      let previousFocus = null;
+
+      function getCurrentStep() {
+        return tutorialSteps[currentStepIndex];
+      }
+
+      function getTargetElement(step) {
+        const target = step?.selector ? document.querySelector(step.selector) : null;
+        if (!target) return null;
+        const rect = target.getBoundingClientRect();
+        return rect.width > 0 || rect.height > 0 ? target : null;
+      }
+
+      function positionTutorial(scrollToTarget = false) {
+        if (!tutorialOpen) return;
+
+        const step = getCurrentStep();
+        const target = getTargetElement(step);
+        overlay.classList.toggle("tutorial-overlay--no-target", !target);
+
+        if (target && scrollToTarget) {
+          target.scrollIntoView({ block: "center", inline: "nearest" });
+        }
+
+        if (target) {
+          const rect = target.getBoundingClientRect();
+          const padding = step.padding || 14;
+          spotlight.style.display = "block";
+          spotlight.style.opacity = "1";
+          spotlight.style.top = `${Math.max(8, rect.top - padding)}px`;
+          spotlight.style.left = `${Math.max(8, rect.left - padding)}px`;
+          spotlight.style.width = `${Math.min(window.innerWidth - 16, rect.width + padding * 2)}px`;
+          spotlight.style.height = `${Math.min(window.innerHeight - 16, rect.height + padding * 2)}px`;
+        } else {
+          spotlight.style.display = "none";
+          spotlight.style.opacity = "0";
+        }
+
+        const cardRect = card.getBoundingClientRect();
+        const viewportPadding = 12;
+        let top = viewportPadding;
+        let left = viewportPadding;
+
+        if (target) {
+          const rect = target.getBoundingClientRect();
+          const preferredTop = rect.bottom + 18;
+          const fitsBelow = preferredTop + cardRect.height <= window.innerHeight - viewportPadding;
+          top = fitsBelow
+            ? preferredTop
+            : Math.max(viewportPadding, rect.top - cardRect.height - 18);
+
+          left = Math.min(
+            Math.max(viewportPadding, rect.left),
+            window.innerWidth - cardRect.width - viewportPadding
+          );
+
+          if (left + cardRect.width > window.innerWidth - viewportPadding) {
+            left = window.innerWidth - cardRect.width - viewportPadding;
+          }
+        } else {
+          top = Math.max(viewportPadding, (window.innerHeight - cardRect.height) / 2);
+          left = Math.max(viewportPadding, (window.innerWidth - cardRect.width) / 2);
+        }
+
+        card.style.top = `${top}px`;
+        card.style.left = `${left}px`;
+      }
+
+      function renderTutorialStep(scrollToTarget = true) {
+        if (!tutorialOpen) return;
+
+        const step = getCurrentStep();
+        if (step.tab) {
+          window.__setDashboardTab?.(step.tab);
+        }
+
+        stepLabel.textContent = `Step ${currentStepIndex + 1} of ${tutorialSteps.length}`;
+        title.textContent = step.title;
+        text.textContent = step.text;
+        backButton.disabled = currentStepIndex === 0;
+        nextButton.textContent = currentStepIndex === tutorialSteps.length - 1 ? "Finish" : "Next";
+
+        requestAnimationFrame(() => {
+          positionTutorial(scrollToTarget);
+          card.focus();
+        });
+      }
+
+      async function closeTutorial() {
+        if (!tutorialOpen) return;
+        tutorialOpen = false;
+        overlay.hidden = true;
+        overlay.classList.remove("tutorial-overlay--active", "tutorial-overlay--no-target");
+        spotlight.style.display = "none";
+        document.body.classList.remove("tutorial-open");
+        window.removeEventListener("resize", handleViewportChange);
+        window.removeEventListener("scroll", handleViewportChange, true);
+        document.removeEventListener("keydown", handleTutorialKeydown);
+        if (restoreTab) {
+          window.__setDashboardTab?.(restoreTab);
+        }
+        if (previousFocus && typeof previousFocus.focus === "function") {
+          previousFocus.focus();
+        }
+        previousFocus = null;
+        await window.__habitflowTutorialState?.markSeen?.();
+      }
+
+      function handleViewportChange() {
+        positionTutorial(false);
+      }
+
+      function handleTutorialKeydown(event) {
+        if (!tutorialOpen) return;
+        if (event.key === "Escape") {
+          event.preventDefault();
+          closeTutorial();
+        } else if (event.key === "ArrowRight") {
+          event.preventDefault();
+          nextStep();
+        } else if (event.key === "ArrowLeft" && currentStepIndex > 0) {
+          event.preventDefault();
+          previousStep();
+        }
+      }
+
+      function nextStep() {
+        if (currentStepIndex >= tutorialSteps.length - 1) {
+          closeTutorial();
+          return;
+        }
+        currentStepIndex += 1;
+        renderTutorialStep();
+      }
+
+      function previousStep() {
+        if (currentStepIndex === 0) return;
+        currentStepIndex -= 1;
+        renderTutorialStep();
+      }
+
+      function startTutorial() {
+        if (tutorialOpen) {
+          renderTutorialStep(false);
+          return;
+        }
+        previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        restoreTab = window.__getActiveDashboardTab?.() || "charts";
+        currentStepIndex = 0;
+        tutorialOpen = true;
+        overlay.hidden = false;
+        overlay.classList.add("tutorial-overlay--active");
+        document.body.classList.add("tutorial-open");
+        window.addEventListener("resize", handleViewportChange);
+        window.addEventListener("scroll", handleViewportChange, true);
+        document.addEventListener("keydown", handleTutorialKeydown);
+        renderTutorialStep();
+      }
+
+      backButton.addEventListener("click", previousStep);
+      nextButton.addEventListener("click", nextStep);
+      skipButton.addEventListener("click", closeTutorial);
+      triggerButton?.addEventListener("click", startTutorial);
+
+      window.__startHabitflowTutorial = startTutorial;
+      window.__habitflowTutorial = {
+        refresh: () => {
+          if (tutorialOpen) renderTutorialStep(false);
+        },
+      };
+    })();
   </script>
 
   <script>
