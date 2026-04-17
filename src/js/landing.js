@@ -43,15 +43,14 @@ const reveals = document.querySelectorAll(".feature-card, .step");
 const io = new IntersectionObserver((entries) => {
   entries.forEach((e) => {
     if (e.isIntersecting) {
-      e.target.style.opacity = "1";
-      e.target.style.transform = "translateY(0)";
+      e.target.classList.add("active");
+      io.unobserve(e.target);
     }
   });
 }, { threshold: 0.1 });
 
-reveals.forEach((el) => {
-  el.style.opacity = "0";
-  el.style.transform = "translateY(24px)";
-  el.style.transition = "opacity 500ms ease, transform 500ms ease";
+reveals.forEach((el, index) => {
+  el.classList.add("reveal");
+  el.style.transitionDelay = `${(index % 3) * 100}ms`;
   io.observe(el);
 });
