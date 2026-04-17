@@ -192,10 +192,23 @@ function normalizeHabits(savedHabits) {
   if (!Array.isArray(savedHabits) || savedHabits.length === 0) return cloneDefaultHabits();
   return savedHabits.map((habit, index) => ({
     id: typeof habit.id === "string" && habit.id ? habit.id : createHabitId(index),
-    name: typeof habit.name === "string" && habit.name.trim() ? habit.name.trim() : `Habit ${index + 1}`,
-    target: typeof habit.target === "string" && habit.target.trim() ? habit.target.trim() : "Daily",
-    color: typeof habit.color === "string" && habit.color.trim() ? habit.color.trim() : habitPalette[index % habitPalette.length],
+    name: sanitizeHabitText(habit.name, `Habit ${index + 1}`, 60),
+    target: sanitizeHabitText(habit.target, "Daily", 30),
+    color: normalizeHabitColor(habit.color, index),
   }));
+}
+
+function sanitizeHabitText(value, fallback, maxLength) {
+  const text = typeof value === "string" ? value.trim() : "";
+  if (!text) return fallback;
+  return text.slice(0, maxLength);
+}
+
+function normalizeHabitColor(value, index) {
+  const color = typeof value === "string" ? value.trim() : "";
+  return /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(color)
+    ? color
+    : habitPalette[index % habitPalette.length];
 }
 
 function clampYear(v) { return Math.min(2100, Math.max(2000, v)); }
@@ -223,16 +236,16 @@ function ensureMonthData() {
 function renderHabitList() {
   habitList.innerHTML = currentHabits()
     .map((h) => `
-      <div class="habit-row habit-row--draggable" data-drag-habit-id="${h.id}">
-        <span class="habit-badge" style="--habit-color:${h.color}"></span>
+      <div class="habit-row habit-row--draggable" data-drag-habit-id="${escapeAttribute(h.id)}">
+        <span class="habit-badge" style="--habit-color:${escapeAttribute(h.color)}"></span>
         <div class="habit-name">
           <div class="habit-copy">
-            <span>${h.name}</span>
-            <span class="habit-target">${h.target}</span>
+            <span>${escapeHtml(h.name)}</span>
+            <span class="habit-target">${escapeHtml(h.target)}</span>
           </div>
           <div class="habit-row-actions">
-            <button class="habit-row-btn" type="button" data-role="edit-habit-inline" data-id="${h.id}">Edit</button>
-            <button class="habit-row-btn habit-row-btn--danger" type="button" data-role="delete-habit-inline" data-id="${h.id}">Del</button>
+            <button class="habit-row-btn" type="button" data-role="edit-habit-inline" data-id="${escapeAttribute(h.id)}">Edit</button>
+            <button class="habit-row-btn habit-row-btn--danger" type="button" data-role="delete-habit-inline" data-id="${escapeAttribute(h.id)}">Del</button>
           </div>
         </div>
       </div>`)
@@ -253,15 +266,15 @@ function renderHabitEditor() {
     .map((h) => `
       <div class="habit-editor-card">
         <div class="habit-editor-top">
-          <span class="habit-editor-color" style="background:${h.color}"></span>
-          <strong>${h.name}</strong>
+          <span class="habit-editor-color" style="background:${escapeAttribute(h.color)}"></span>
+          <strong>${escapeHtml(h.name)}</strong>
         </div>
         <div class="habit-editor-fields">
-          <input type="text" value="${escapeAttribute(h.name)}" data-role="habit-name" data-id="${h.id}" placeholder="Habit name"/>
-          <input type="text" value="${escapeAttribute(h.target)}" data-role="habit-target" data-id="${h.id}" placeholder="Target"/>
+          <input type="text" value="${escapeAttribute(h.name)}" data-role="habit-name" data-id="${escapeAttribute(h.id)}" placeholder="Habit name"/>
+          <input type="text" value="${escapeAttribute(h.target)}" data-role="habit-target" data-id="${escapeAttribute(h.id)}" placeholder="Target"/>
         </div>
         <div class="habit-editor-actions">
-          <button class="text-btn" type="button" data-role="delete-habit" data-id="${h.id}">Delete</button>
+          <button class="text-btn" type="button" data-role="delete-habit" data-id="${escapeAttribute(h.id)}">Delete</button>
         </div>
       </div>`)
     .join("");
@@ -279,8 +292,8 @@ function handleHabitFieldChange(event) {
   const input = event.currentTarget;
   const habit = currentHabits().find((h) => h.id === input.dataset.id);
   if (!habit) return;
-  if (input.dataset.role === "habit-name") habit.name = input.value.trimStart() || "Untitled Habit";
-  if (input.dataset.role === "habit-target") habit.target = input.value.trimStart() || "Daily";
+  if (input.dataset.role === "habit-name") habit.name = sanitizeHabitText(input.value, "Untitled Habit", 60);
+  if (input.dataset.role === "habit-target") habit.target = sanitizeHabitText(input.value, "Daily", 30);
   saveState(); render();
 }
 
@@ -425,12 +438,12 @@ function renderCalendar(days, habitChecks, habits) {
   const habitRows = habits
     .map((habit) => `
       <div class="calendar-row">
-        <div class="calendar-label calendar-label-editable" data-habit-id="${habit.id}" data-drag-habit-id="${habit.id}">
-          <span class="habit-dot" style="background:${habit.color}"></span>
-          <span class="habit-label-text">${habit.name}</span>
+        <div class="calendar-label calendar-label-editable" data-habit-id="${escapeAttribute(habit.id)}" data-drag-habit-id="${escapeAttribute(habit.id)}">
+          <span class="habit-dot" style="background:${escapeAttribute(habit.color)}"></span>
+          <span class="habit-label-text">${escapeHtml(habit.name)}</span>
           <span class="habit-label-actions">
-            <button class="habit-label-edit-btn" data-habit-id="${habit.id}" title="Rename habit">✎</button>
-            <button class="habit-label-delete-btn" data-habit-id="${habit.id}" title="Delete habit">✕</button>
+            <button class="habit-label-edit-btn" data-habit-id="${escapeAttribute(habit.id)}" title="Rename habit">✎</button>
+            <button class="habit-label-delete-btn" data-habit-id="${escapeAttribute(habit.id)}" title="Delete habit">✕</button>
           </span>
         </div>
         ${habitChecks[habit.id].map((checked, dayIndex) => {
@@ -438,7 +451,7 @@ function renderCalendar(days, habitChecks, habits) {
           return `
           <label class="day-cell ${locked ? "day-cell--locked" : ""}">
             <span class="habit-check">
-              <input type="checkbox" data-habit="${habit.id}" data-day="${dayIndex}" ${checked ? "checked" : ""} ${locked ? "disabled" : ""}/>
+              <input type="checkbox" data-habit="${escapeAttribute(habit.id)}" data-day="${dayIndex}" ${checked ? "checked" : ""} ${locked ? "disabled" : ""}/>
               <span></span>
             </span>
           </label>`;
@@ -515,12 +528,12 @@ function renderMobileCalendar(days, habitChecks, habits) {
   const habitRows = habits
     .map((habit) => `
       <div class="calendar-row calendar-row--mobile">
-        <div class="calendar-label calendar-label-editable" data-habit-id="${habit.id}" data-drag-habit-id="${habit.id}">
-          <span class="habit-dot" style="background:${habit.color}"></span>
-          <span class="habit-label-text">${habit.name}</span>
+        <div class="calendar-label calendar-label-editable" data-habit-id="${escapeAttribute(habit.id)}" data-drag-habit-id="${escapeAttribute(habit.id)}">
+          <span class="habit-dot" style="background:${escapeAttribute(habit.color)}"></span>
+          <span class="habit-label-text">${escapeHtml(habit.name)}</span>
           <span class="habit-label-actions">
-            <button class="habit-label-edit-btn" data-habit-id="${habit.id}" title="Rename habit">Edit</button>
-            <button class="habit-label-delete-btn" data-habit-id="${habit.id}" title="Delete habit">Del</button>
+            <button class="habit-label-edit-btn" data-habit-id="${escapeAttribute(habit.id)}" title="Rename habit">Edit</button>
+            <button class="habit-label-delete-btn" data-habit-id="${escapeAttribute(habit.id)}" title="Delete habit">Del</button>
           </span>
         </div>
         ${visibleDays.map((dayIndex) => {
@@ -528,7 +541,7 @@ function renderMobileCalendar(days, habitChecks, habits) {
           return `
           <label class="day-cell ${locked ? "day-cell--locked" : ""}">
             <span class="habit-check">
-              <input type="checkbox" data-habit="${habit.id}" data-day="${dayIndex}" ${habitChecks[habit.id][dayIndex] ? "checked" : ""} ${locked ? "disabled" : ""}/>
+              <input type="checkbox" data-habit="${escapeAttribute(habit.id)}" data-day="${dayIndex}" ${habitChecks[habit.id][dayIndex] ? "checked" : ""} ${locked ? "disabled" : ""}/>
               <span></span>
             </span>
           </label>`;
@@ -585,7 +598,8 @@ function renderMobileCalendar(days, habitChecks, habits) {
 }
 
 function openInlineHabitEditor(habitId, anchorEl, options = {}) {
-  const fallbackEl = calendarGrid.querySelector(`.calendar-label-editable[data-habit-id="${habitId}"]`);
+  const fallbackEl = Array.from(calendarGrid.querySelectorAll(".calendar-label-editable"))
+    .find((element) => element.dataset.habitId === habitId);
   openHabitEditorPopover(habitId, anchorEl || fallbackEl, options);
 }
 
@@ -624,8 +638,8 @@ function openHabitEditorPopover(habitId, anchorEl, options = {}) {
   nameInput.select();
 
   function savePopover() {
-    habit.name   = nameInput.value.trim() || habit.name;
-    habit.target = targetInput.value.trim() || habit.target;
+    habit.name = sanitizeHabitText(nameInput.value, habit.name, 60);
+    habit.target = sanitizeHabitText(targetInput.value, habit.target, 30);
     saveState(); render();
   }
 
@@ -843,11 +857,11 @@ function renderTopHabits(habitChecks, habits) {
     .map((item, i) => `
       <li class="streak-item">
         <span class="streak-rank">${i + 1}.</span>
-        <span class="streak-name">${item.name}</span>
+        <span class="streak-name">${escapeHtml(item.name)}</span>
         <span class="streak-count-wrap">
-          <button class="streak-adj-btn" data-habit-id="${item.id}" data-action="dec" title="Remove one check">−</button>
+          <button class="streak-adj-btn" data-habit-id="${escapeAttribute(item.id)}" data-action="dec" title="Remove one check">−</button>
           <strong class="streak-count">${item.count}</strong>
-          <button class="streak-adj-btn" data-habit-id="${item.id}" data-action="inc" title="Add one check">+</button>
+          <button class="streak-adj-btn" data-habit-id="${escapeAttribute(item.id)}" data-action="inc" title="Add one check">+</button>
         </span>
       </li>`)
     .join("");
@@ -939,10 +953,10 @@ function renderHistoryPanel() {
               const p = Math.round((cnt / days) * 100);
               return `
                 <div class="history-habit-row">
-                  <span class="history-habit-dot" style="background:${habit.color}"></span>
-                  <span class="history-habit-name">${habit.name}</span>
+                  <span class="history-habit-dot" style="background:${escapeAttribute(habit.color)}"></span>
+                  <span class="history-habit-name">${escapeHtml(habit.name)}</span>
                   <span class="history-habit-count">${cnt}/${days}</span>
-                  <div class="history-mini-bar-wrap"><div class="history-mini-bar" style="width:${p}%;background:${habit.color}"></div></div>
+                  <div class="history-mini-bar-wrap"><div class="history-mini-bar" style="width:${p}%;background:${escapeAttribute(habit.color)}"></div></div>
                   <span class="history-habit-pct">${p}%</span>
                 </div>`;
             }).join("")}
@@ -1077,8 +1091,15 @@ function defaultMonthlyNote() {
   return "Focus on consistency over perfect streaks. Protect sleep, plan the next day before bed, and use the weekly chart to catch dips early.";
 }
 
-function escapeAttribute(value) {
+function escapeHtml(value) {
   return String(value)
-    .replace(/&/g, "&amp;").replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function escapeAttribute(value) {
+  return escapeHtml(value)
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }

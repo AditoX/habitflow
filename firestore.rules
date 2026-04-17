@@ -1,0 +1,38 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function hasAllowedUserKeys() {
+      return request.resource.data.keys().hasOnly([
+        "trackerState",
+        "storageVersion",
+        "tutorialSeen",
+        "updatedAt"
+      ]);
+    }
+
+    function hasValidUserDocShape() {
+      return (!request.resource.data.keys().hasAny(["trackerState"]) || request.resource.data.trackerState is map)
+        && (!request.resource.data.keys().hasAny(["storageVersion"]) || request.resource.data.storageVersion is string)
+        && (!request.resource.data.keys().hasAny(["tutorialSeen"]) || request.resource.data.tutorialSeen is bool)
+        && (!request.resource.data.keys().hasAny(["updatedAt"]) || request.resource.data.updatedAt is string);
+    }
+
+    match /users/{userId} {
+      allow read, delete: if isOwner(userId);
+      allow create, update: if isOwner(userId) && hasAllowedUserKeys() && hasValidUserDocShape();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
