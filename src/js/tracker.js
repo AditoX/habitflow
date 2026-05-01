@@ -173,6 +173,11 @@ function loadState() {
     state.habits = normalizeHabits(parsed.habits);
     state.notesByMonth = parsed.notesByMonth && typeof parsed.notesByMonth === "object" ? parsed.notesByMonth : {};
     state.checks = parsed.checks && typeof parsed.checks === "object" ? parsed.checks : {};
+
+    if (shouldAutoAdvanceToCurrentMonth(parsed, today)) {
+      state.month = today.getMonth();
+      state.year = today.getFullYear();
+    }
   }
 
   yearInput.value = String(state.year);
@@ -182,7 +187,10 @@ function loadState() {
 }
 
 function saveState() {
-  localStorage.setItem(getStorageKey(), JSON.stringify(state));
+  localStorage.setItem(getStorageKey(), JSON.stringify({
+    ...state,
+    lastCalendarKey: getCurrentCalendarMonthKey(),
+  }));
   localStorage.setItem(getStorageVersionKey(), storageVersion);
 }
 
@@ -212,9 +220,29 @@ function normalizeHabitColor(value, index) {
 }
 
 function clampYear(v) { return Math.min(2100, Math.max(2000, v)); }
+function getCalendarMonthKey(year, month) { return `${year}-${String(month + 1).padStart(2, "0")}`; }
+function getCurrentCalendarMonthKey(date = new Date()) { return getCalendarMonthKey(date.getFullYear(), date.getMonth()); }
 function getMonthKey() { return `${state.year}-${String(state.month + 1).padStart(2, "0")}`; }
 function getDaysInMonth() { return new Date(state.year, state.month + 1, 0).getDate(); }
 function currentHabits() { return state.habits; }
+
+function shouldAutoAdvanceToCurrentMonth(savedState, today) {
+  if (!savedState || !Number.isInteger(savedState.year) || !Number.isInteger(savedState.month)) return false;
+
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth();
+  const savedMonthIsPast = savedState.year < currentYear
+    || (savedState.year === currentYear && savedState.month < currentMonth);
+
+  if (!savedMonthIsPast) return false;
+
+  const currentCalendarKey = getCurrentCalendarMonthKey(today);
+  if (typeof savedState.lastCalendarKey !== "string" || !savedState.lastCalendarKey) {
+    return true;
+  }
+
+  return savedState.lastCalendarKey !== currentCalendarKey;
+}
 
 function ensureMonthData() {
   const monthKey = getMonthKey();
