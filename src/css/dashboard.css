@@ -284,3 +284,182 @@ html, body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Professional polish */
+.dash-nav {
+  height: 62px;
+  background:
+    linear-gradient(180deg, rgba(8, 12, 18, 0.96), rgba(9, 13, 21, 0.9)),
+    rgba(8, 12, 18, 0.92);
+  border-bottom: 1px solid rgba(151, 164, 186, 0.12);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
+}
+
+.dash-nav-inner {
+  max-width: 1880px;
+  padding: 0 26px;
+}
+
+.nav-logo {
+  font-size: 1.18rem;
+  letter-spacing: -0.04em;
+}
+
+.dash-user-name {
+  color: rgba(183, 196, 216, 0.82);
+}
+
+.dash-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(152, 169, 191, 0.34), rgba(143, 184, 162, 0.34));
+  border-color: rgba(151, 164, 186, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.dash-signout {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+}
+
+.page-stack {
+  width: min(1880px, calc(100% - 28px));
+  padding: 18px 0 30px;
+  gap: 18px;
+}
+
+.tracker-shell {
+  position: relative;
+  border-radius: 34px;
+  border: 1px solid rgba(151, 164, 186, 0.12);
+  background:
+    radial-gradient(circle at top left, rgba(142, 162, 189, 0.1), transparent 22%),
+    radial-gradient(circle at 86% 12%, rgba(143, 184, 162, 0.08), transparent 20%),
+    linear-gradient(180deg, rgba(16, 22, 34, 0.98), rgba(10, 15, 24, 0.96));
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.34);
+}
+
+.tracker-shell::before,
+.tracker-shell::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(64px);
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.tracker-shell::before {
+  inset: 2% auto auto -4%;
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle, rgba(142, 162, 189, 0.18), transparent 72%);
+}
+
+.tracker-shell::after {
+  inset: auto -3% 8% auto;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(198, 162, 125, 0.14), transparent 72%);
+}
+
+.tracker-layout {
+  position: relative;
+  z-index: 1;
+  grid-template-columns: 260px minmax(0, 1fr) 190px;
+  gap: 18px;
+  padding: 18px;
+}
+
+.left-rail,
+.main-rail,
+.right-rail {
+  gap: 14px;
+}
+
+.right-rail {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.right-rail-panel {
+  position: relative;
+  padding: 18px 16px;
+  min-height: 120px;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(22, 29, 43, 0.94), rgba(14, 19, 29, 0.92)),
+    rgba(14, 20, 32, 0.88);
+  border: 1px solid rgba(151, 164, 186, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.right-rail-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+}
+
+.right-rail-value {
+  font-size: clamp(1.7rem, 3vw, 2.15rem);
+  line-height: 0.94;
+  max-width: 6ch;
+}
+
+.mood-card .right-rail-value {
+  color: #9fd1b6;
+}
+
+.motivation-card .right-rail-value {
+  color: #b6c8de;
+}
+
+.tip-card {
+  min-height: 170px;
+}
+
+.right-rail-tip {
+  color: rgba(183, 196, 216, 0.74);
+  font-size: 0.83rem;
+  line-height: 1.72;
+}
+
+@media (max-width: 1220px) {
+  .page-stack {
+    width: calc(100% - 18px);
+    padding-top: 10px;
+  }
+
+  .tracker-shell {
+    border-radius: 26px;
+  }
+
+  .tracker-layout {
+    padding: 12px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .dash-nav {
+    height: 52px;
+  }
+
+  .dash-nav-inner {
+    padding: 0 12px;
+  }
+
+  .dash-avatar,
+  .dash-signout {
+    width: 32px;
+    height: 32px;
+  }
+
+  .tracker-shell {
+    border-radius: 20px;
+  }
+}
