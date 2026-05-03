@@ -1,22 +1,22 @@
 :root {
-  --bg: #0A0A0B;
-  --bg-soft: #111216;
-  --panel: rgba(20, 20, 22, 0.6);
-  --panel-strong: rgba(26, 26, 28, 0.8);
-  --panel-alt: rgba(30, 30, 32, 0.6);
-  --line: rgba(255, 255, 255, 0.08);
-  --line-strong: rgba(255, 255, 255, 0.18);
-  --text: #F8F9FA;
-  --muted: #A1A1AA;
-  --accent: #38BDF8;
-  --accent-strong: #E2E8F0;
-  --accent-warm: #818CF8;
-  --accent-soft: rgba(255, 255, 255, 0.05);
-  --success: #34D399;
-  --success-soft: #059669;
-  --warning: #FBBF24;
-  --danger: #F87171;
-  --shadow: 0 24px 54px rgba(0, 0, 0, 0.4);
+  --bg: #e5e3de;
+  --bg-soft: #efede8;
+  --panel: rgba(255, 255, 255, 0.9);
+  --panel-strong: rgba(255, 255, 255, 0.98);
+  --panel-alt: rgba(243, 241, 236, 0.96);
+  --line: rgba(17, 17, 17, 0.08);
+  --line-strong: rgba(17, 17, 17, 0.18);
+  --text: #121212;
+  --muted: #6b6b6b;
+  --accent: #2f2f2f;
+  --accent-strong: #111111;
+  --accent-warm: #8d867d;
+  --accent-soft: rgba(17, 17, 17, 0.05);
+  --success: #7e9383;
+  --success-soft: #dfe5df;
+  --warning: #b29c7a;
+  --danger: #ae7a7a;
+  --shadow: 0 24px 54px rgba(15, 15, 15, 0.08);
   --radius-xl: 32px;
   --radius-lg: 24px;
   --radius-md: 18px;
@@ -41,9 +41,9 @@ body {
   color: var(--text);
   font-family: "Inter", sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(129, 140, 248, 0.1), transparent 24%),
-    radial-gradient(circle at 88% 12%, rgba(56, 189, 248, 0.08), transparent 20%),
-    linear-gradient(180deg, #0A0A0B 0%, #111216 100%);
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.82), transparent 24%),
+    radial-gradient(circle at 88% 12%, rgba(0, 0, 0, 0.035), transparent 20%),
+    linear-gradient(180deg, #ece9e3 0%, #e5e3de 42%, #dfddd7 100%);
   overflow-x: hidden;
 }
 
@@ -77,9 +77,9 @@ a {
 .tracker-shell {
   position: relative;
   border: 1px solid var(--line);
-  background: var(--panel);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 241, 236, 0.94));
   box-shadow: var(--shadow);
-  backdrop-filter: blur(24px);
+  backdrop-filter: blur(12px);
 }
 
 .hero-stage {

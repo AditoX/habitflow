@@ -1,12 +1,12 @@
 :root {
-  --bg: #0A0A0B;
-  --panel: rgba(20, 20, 22, 0.6);
-  --line: rgba(255, 255, 255, 0.08);
-  --text: #F8F9FA;
-  --muted: #A1A1AA;
-  --accent: #38BDF8;
-  --success: #34D399;
-  --danger: #F87171;
+  --bg: #080c12;
+  --panel: rgba(14, 20, 32, 0.96);
+  --line: rgba(151, 164, 186, 0.14);
+  --text: #edf2f7;
+  --muted: #7a8899;
+  --accent: #8ea2bd;
+  --success: #7fb89e;
+  --danger: #c87878;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -320,9 +320,9 @@ button { font: inherit; cursor: pointer; }
 /* Professional polish */
 body {
   background:
-    radial-gradient(circle at 14% 10%, rgba(129, 140, 248, 0.1), transparent 26%),
-    radial-gradient(circle at 86% 84%, rgba(56, 189, 248, 0.08), transparent 22%),
-    linear-gradient(180deg, #0A0A0B 0%, #111216 48%, #1A1A1E 100%);
+    radial-gradient(circle at 14% 10%, rgba(142, 162, 189, 0.16), transparent 26%),
+    radial-gradient(circle at 86% 84%, rgba(198, 162, 125, 0.12), transparent 22%),
+    linear-gradient(180deg, #07101a 0%, #0b121d 48%, #0d1522 100%);
 }
 
 .auth-nav {
@@ -401,12 +401,22 @@ body {
   }
 }
 
-/* Remove minimal theme variables */
+/* Light minimal theme */
+:root {
+  --bg: #e8e5de;
+  --panel: rgba(255, 255, 255, 0.96);
+  --line: rgba(17, 17, 17, 0.08);
+  --text: #121212;
+  --muted: #66665f;
+  --accent: #1f1f1f;
+  --success: #7f9382;
+  --danger: #b57f7f;
+}
 
 body {
   background:
-    radial-gradient(circle at 12% 8%, rgba(129, 140, 248, 0.1), transparent 24%),
-    linear-gradient(180deg, #0A0A0B 0%, #111216 48%, #1A1A1E 100%);
+    radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.8), transparent 24%),
+    linear-gradient(180deg, #efece5 0%, #e7e4dd 48%, #dfdcd5 100%);
   color: var(--text);
 }
 
