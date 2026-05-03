@@ -1028,3 +1028,115 @@ body {
     padding: 36px 22px;
   }
 }
+
+/* Light minimal theme */
+:root {
+  --bg: #e8e5de;
+  --panel: rgba(255, 255, 255, 0.9);
+  --line: rgba(17, 17, 17, 0.08);
+  --text: #121212;
+  --muted: #66665f;
+  --accent: #1c1c1c;
+  --accent-warm: #8d867d;
+  --success: #7f9382;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.78), transparent 26%),
+    linear-gradient(180deg, #eeebe4 0%, #e6e3dc 42%, #dedbd4 100%);
+  color: var(--text);
+}
+
+.nav {
+  background: rgba(246, 243, 238, 0.88);
+  border-bottom-color: rgba(17, 17, 17, 0.08);
+}
+
+.nav-logo,
+.nav-links a:hover,
+.hero-h1,
+.section-h2,
+.feature-card h3,
+.step h3,
+.footer-logo {
+  color: #121212;
+}
+
+.nav-links,
+.hero-sub,
+.feature-card p,
+.step p,
+.footer-copy {
+  color: #66665f;
+}
+
+.hero-badge {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(17, 17, 17, 0.08);
+  color: #555550;
+}
+
+.grid-lines {
+  background-image:
+    linear-gradient(rgba(17, 17, 17, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 17, 17, 0.035) 1px, transparent 1px);
+}
+
+.orb-1 {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.6), transparent 72%);
+}
+
+.orb-2 {
+  background: radial-gradient(circle, rgba(17, 17, 17, 0.08), transparent 72%);
+}
+
+.btn-primary,
+.nav-cta {
+  background: #171717;
+  color: #f6f4ef;
+  box-shadow: 0 12px 28px rgba(17, 17, 17, 0.12);
+}
+
+.btn-primary:hover,
+.nav-cta:hover {
+  color: #f6f4ef;
+  opacity: 1;
+  background: #0f0f0f;
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(17, 17, 17, 0.1);
+  color: #1b1b1b;
+}
+
+.btn-ghost:hover {
+  border-color: rgba(17, 17, 17, 0.18);
+  color: #111111;
+}
+
+.preview-window,
+.feature-card,
+.step,
+.cta-inner,
+.stat {
+  background: rgba(255, 255, 255, 0.84);
+  border-color: rgba(17, 17, 17, 0.08);
+  box-shadow: 0 18px 44px rgba(17, 17, 17, 0.07);
+}
+
+.preview-window:hover,
+.feature-card:hover {
+  box-shadow: 0 22px 48px rgba(17, 17, 17, 0.1);
+}
+
+.cta-inner {
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.58), transparent 30%),
+    linear-gradient(180deg, rgba(250, 248, 244, 0.98), rgba(238, 234, 228, 0.96));
+}
+
+.footer {
+  border-top-color: rgba(17, 17, 17, 0.08);
+}

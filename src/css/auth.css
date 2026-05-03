@@ -400,3 +400,63 @@ body {
     border-radius: 24px;
   }
 }
+
+/* Light minimal theme */
+:root {
+  --bg: #e8e5de;
+  --panel: rgba(255, 255, 255, 0.96);
+  --line: rgba(17, 17, 17, 0.08);
+  --text: #121212;
+  --muted: #66665f;
+  --accent: #1f1f1f;
+  --success: #7f9382;
+  --danger: #b57f7f;
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.8), transparent 24%),
+    linear-gradient(180deg, #efece5 0%, #e7e4dd 48%, #dfdcd5 100%);
+  color: var(--text);
+}
+
+.auth-card {
+  border-color: rgba(17, 17, 17, 0.08);
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.7), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(241, 238, 232, 0.96));
+  box-shadow: 0 24px 58px rgba(17, 17, 17, 0.08);
+}
+
+.auth-card::before {
+  background: linear-gradient(90deg, transparent, rgba(17, 17, 17, 0.08), transparent);
+}
+
+.auth-logo-mark {
+  background: linear-gradient(135deg, rgba(17, 17, 17, 0.08), rgba(17, 17, 17, 0.16));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  color: #121212;
+}
+
+.auth-header p,
+.auth-terms {
+  color: #66665f;
+}
+
+.btn-google {
+  border-color: rgba(17, 17, 17, 0.1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(239, 236, 230, 0.96));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  color: #121212;
+}
+
+.btn-google:hover {
+  background: rgba(246, 243, 238, 0.98);
+  border-color: rgba(17, 17, 17, 0.18);
+}
+
+.auth-error {
+  background: rgba(181, 127, 127, 0.08);
+  border-color: rgba(181, 127, 127, 0.18);
+  color: #8e5959;
+}

@@ -1,22 +1,22 @@
 :root {
-  --bg: #0b1018;
-  --bg-soft: #111827;
-  --panel: rgba(18, 24, 36, 0.84);
-  --panel-strong: rgba(20, 27, 41, 0.96);
-  --panel-alt: rgba(24, 32, 47, 0.92);
-  --line: rgba(151, 164, 186, 0.14);
-  --line-strong: rgba(151, 164, 186, 0.26);
-  --text: #edf2f7;
-  --muted: #98a4b8;
-  --accent: #b7c4d8;
-  --accent-strong: #8ea2bd;
-  --accent-warm: #c6a27d;
-  --accent-soft: rgba(142, 162, 189, 0.12);
-  --success: #8fb8a2;
-  --success-soft: #24352f;
-  --warning: #c7ae7c;
-  --danger: #bb8585;
-  --shadow: 0 28px 70px rgba(0, 0, 0, 0.32);
+  --bg: #e5e3de;
+  --bg-soft: #efede8;
+  --panel: rgba(255, 255, 255, 0.9);
+  --panel-strong: rgba(255, 255, 255, 0.98);
+  --panel-alt: rgba(243, 241, 236, 0.96);
+  --line: rgba(17, 17, 17, 0.08);
+  --line-strong: rgba(17, 17, 17, 0.18);
+  --text: #121212;
+  --muted: #6b6b6b;
+  --accent: #2f2f2f;
+  --accent-strong: #111111;
+  --accent-warm: #8d867d;
+  --accent-soft: rgba(17, 17, 17, 0.05);
+  --success: #7e9383;
+  --success-soft: #dfe5df;
+  --warning: #b29c7a;
+  --danger: #ae7a7a;
+  --shadow: 0 24px 54px rgba(15, 15, 15, 0.08);
   --radius-xl: 32px;
   --radius-lg: 24px;
   --radius-md: 18px;
@@ -41,9 +41,9 @@ body {
   color: var(--text);
   font-family: "Space Grotesk", sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(142, 162, 189, 0.08), transparent 28%),
-    radial-gradient(circle at 85% 8%, rgba(198, 162, 125, 0.08), transparent 24%),
-    linear-gradient(180deg, #0a0f17 0%, #0c121c 38%, #0f1622 100%);
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.82), transparent 24%),
+    radial-gradient(circle at 88% 12%, rgba(0, 0, 0, 0.035), transparent 20%),
+    linear-gradient(180deg, #ece9e3 0%, #e5e3de 42%, #dfddd7 100%);
   overflow-x: hidden;
 }
 
@@ -77,9 +77,9 @@ a {
 .tracker-shell {
   position: relative;
   border: 1px solid var(--line);
-  background: linear-gradient(180deg, rgba(18, 24, 36, 0.96), rgba(14, 19, 29, 0.92));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 241, 236, 0.94));
   box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(12px);
 }
 
 .hero-stage {
@@ -2130,4 +2130,106 @@ body.habit-reorder-active .calendar-label-editable[data-drag-habit-id] {
   .calendar-row {
     min-width: 0;
   }
+}
+
+/* Nardo light theme */
+.panel {
+  border-color: rgba(17, 17, 17, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(245, 243, 239, 0.94)),
+    rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 14px 36px rgba(17, 17, 17, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.hero-panel {
+  background:
+    radial-gradient(circle at top right, rgba(0, 0, 0, 0.045), transparent 30%),
+    radial-gradient(circle at left center, rgba(255, 255, 255, 0.55), transparent 38%),
+    linear-gradient(180deg, rgba(250, 248, 244, 0.98), rgba(237, 234, 227, 0.94));
+}
+
+.hero-year,
+.habit-target,
+.right-rail-tip,
+.notes-field textarea::placeholder {
+  color: #66665f;
+}
+
+.hero-meta span,
+.eyebrow-pill {
+  border-color: rgba(17, 17, 17, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  color: #535353;
+}
+
+.field input,
+.field select,
+.mini-field input,
+.notes-field textarea,
+.history-card,
+.day-cell {
+  background: rgba(255, 255, 255, 0.84);
+}
+
+.field input,
+.field select,
+.mini-field input,
+.notes-field textarea {
+  border-color: rgba(17, 17, 17, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.field input:focus,
+.field select:focus,
+.mini-field input:focus,
+.notes-field textarea:focus {
+  border-color: rgba(17, 17, 17, 0.24);
+  box-shadow: 0 0 0 4px rgba(17, 17, 17, 0.06);
+}
+
+.subtle-btn,
+.add-habit-inline-btn,
+.habit-row-btn,
+.history-jump-btn {
+  border-color: rgba(17, 17, 17, 0.1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(236, 234, 228, 0.96));
+  color: #161616;
+}
+
+.habit-row-btn:hover,
+.habit-label-edit-btn:hover,
+.habit-label-move-btn:hover:not(:disabled),
+.subtle-btn:hover,
+.add-habit-inline-btn:hover,
+.history-jump-btn:hover {
+  border-color: rgba(17, 17, 17, 0.18);
+  background: rgba(245, 243, 239, 0.98);
+}
+
+.calendar-label,
+.head-cell,
+.week-band {
+  border-color: rgba(17, 17, 17, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(239, 237, 232, 0.94));
+}
+
+.day-cell {
+  border-color: rgba(17, 17, 17, 0.06);
+}
+
+.donut-hole {
+  background: linear-gradient(180deg, rgba(252, 250, 246, 0.98), rgba(241, 239, 234, 0.96));
+  border-color: rgba(17, 17, 17, 0.08);
+}
+
+.analysis-head,
+.grid-day,
+.panel-title,
+.field span,
+.mini-field span,
+.goal-grid span,
+.notes-field span {
+  color: #5b5b56;
 }

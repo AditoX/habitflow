@@ -3,21 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b1018" />
+  <meta name="theme-color" content="#e8e5de" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Habitflow" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/icons/icon.svg" />
   <title>Habitflow — Build discipline like a product</title>
-  <meta name="description" content="A premium monthly habit tracker for indie builders. Dark mode, animated insights, and a dashboard that feels like momentum." />
+  <meta name="description" content="A clean monthly habit tracker for builders who want a focused, professional dashboard for consistency." />
 
   <!-- OpenGraph / Social preview -->
   <meta property="og:type"        content="website" />
   <meta property="og:url"         content="https://habitflow.app/" />
   <meta property="og:title"       content="Habitflow — Build discipline like a product" />
-  <meta property="og:description" content="A premium monthly habit tracker for indie builders. Dark mode, animated insights, and a dashboard that feels like momentum." />
+  <meta property="og:description" content="A clean monthly habit tracker for builders who want a focused, professional dashboard for consistency." />
   <meta property="og:image"       content="https://habitflow.app/icons/og-image.png" />
   <meta property="og:image:width"  content="1200" />
   <meta property="og:image:height" content="630" />
@@ -26,7 +26,7 @@
   <!-- Twitter / X card -->
   <meta name="twitter:card"        content="summary_large_image" />
   <meta name="twitter:title"       content="Habitflow — Build discipline like a product" />
-  <meta name="twitter:description" content="A premium monthly habit tracker for indie builders. Dark mode, animated insights, and a dashboard that feels like momentum." />
+  <meta name="twitter:description" content="A clean monthly habit tracker for builders who want a focused, professional dashboard for consistency." />
   <meta name="twitter:image"       content="https://habitflow.app/icons/og-image.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -70,6 +70,22 @@
     }
     .btn-hero-cta:hover .btn-primary-arrow {
       transform: translateX(4px);
+    }
+
+    /* Light theme overrides */
+    :focus-visible {
+      outline-color: #111111;
+    }
+
+    .btn-hero-cta {
+      background: linear-gradient(135deg, #161616 0%, #2b2b2b 100%);
+      color: #f5f2ec;
+      box-shadow: 0 14px 32px rgba(17, 17, 17, 0.12);
+    }
+
+    .btn-hero-cta:hover {
+      box-shadow: 0 18px 38px rgba(17, 17, 17, 0.18);
+      filter: none;
     }
   </style>
 </head>
