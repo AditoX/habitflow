@@ -401,7 +401,13 @@
 
     <main class="page-stack">
 
-      <section class="tracker-shell" id="dashboard">
+      <section class="tracker-shell" id="dashboard" data-mobile-section="track">
+        <div class="mobile-dashboard-nav" id="mobileDashboardNav" aria-label="Dashboard mobile sections">
+          <button class="mobile-dashboard-tab mobile-dashboard-tab--active" type="button" data-mobile-section="track">Track</button>
+          <button class="mobile-dashboard-tab" type="button" data-mobile-section="review">Review</button>
+          <button class="mobile-dashboard-tab" type="button" data-mobile-section="habits">Habits</button>
+          <button class="mobile-dashboard-tab" type="button" data-mobile-section="settings">Settings</button>
+        </div>
         <section class="tracker-layout">
           <aside class="left-rail">
             <div class="panel hero-panel">
@@ -750,6 +756,8 @@
   <script>
     const dashboardTabs = Array.from(document.querySelectorAll(".dash-tab"));
     const dashboardPanes = Array.from(document.querySelectorAll(".tab-pane"));
+    const mobileDashboardShell = document.getElementById("dashboard");
+    const mobileDashboardTabs = Array.from(document.querySelectorAll(".mobile-dashboard-tab"));
 
     function setDashboardTab(tabIdOrButtonId) {
       const normalizedId = String(tabIdOrButtonId || "").replace(/^tbtn-/, "");
@@ -785,6 +793,29 @@
     dashboardTabs.forEach((button) => {
       button.addEventListener("click", () => setDashboardTab(button.id));
     });
+
+    function setMobileDashboardSection(section) {
+      if (!mobileDashboardShell) return;
+      const nextSection = String(section || "track");
+      mobileDashboardShell.dataset.mobileSection = nextSection;
+
+      mobileDashboardTabs.forEach((button) => {
+        const isActive = button.dataset.mobileSection === nextSection;
+        button.classList.toggle("mobile-dashboard-tab--active", isActive);
+        button.setAttribute("aria-pressed", isActive ? "true" : "false");
+      });
+    }
+
+    function getMobileDashboardSection() {
+      return mobileDashboardShell?.dataset.mobileSection || "track";
+    }
+
+    window.__setMobileDashboardSection = setMobileDashboardSection;
+    window.__getMobileDashboardSection = getMobileDashboardSection;
+
+    mobileDashboardTabs.forEach((button) => {
+      button.addEventListener("click", () => setMobileDashboardSection(button.dataset.mobileSection));
+    });
   </script>
 
   <script>
@@ -806,50 +837,59 @@
 
       const tutorialSteps = [
         {
+          mobileSection: "track",
           title: "Welcome to Habitflow",
           text: "This quick tour shows you how to log habits, read your progress, and find the sections you'll actually use day to day.",
         },
         {
           selector: ".primary-panel",
+          mobileSection: "track",
           title: "This is your daily check-in board",
           text: "The calendar is the heart of Habitflow. Open the dashboard, mark the habits you completed today, and your stats update instantly.",
         },
         {
           selector: ".habits-panel",
+          mobileSection: "habits",
           title: "Start with your habit list",
           text: "Your default habits live here. You can add new ones, edit targets, delete old ones, or drag to reorder them whenever your routine changes.",
         },
         {
           selector: "#calendarGrid input[type='checkbox']:not([disabled]), #calendarGrid",
+          mobileSection: "track",
           title: "Tap a square to log progress",
           text: "Each open checkbox is a habit for a specific day. Check it when you finish the habit, and Habitflow turns that into momentum across the dashboard.",
         },
         {
           selector: "#tbtn-charts",
           tab: "charts",
+          mobileSection: "review",
           title: "Progress turns your streaks into signal",
           text: "Use the Progress tab to spot strong weeks, weak days, and your overall completion trend without digging through raw checkmarks.",
         },
         {
           selector: "#tbtn-analysis",
           tab: "analysis",
+          mobileSection: "review",
           title: "Analysis shows what is working",
           text: "This tab breaks habits down one by one, so you can see which routines are slipping and which ones are becoming automatic.",
         },
         {
           selector: "#tbtn-history",
           tab: "history",
+          mobileSection: "review",
           title: "History keeps every month visible",
           text: "Once you move into a new month, Habitflow saves the old one here. That makes it easy to compare consistency over time instead of guessing.",
         },
         {
           selector: "#tbtn-journal",
           tab: "journal",
+          mobileSection: "review",
           title: "Journal the patterns behind the numbers",
           text: "Use Journal for wins, setbacks, or reminders. The charts show what happened. The journal helps you remember why it happened.",
         },
         {
           selector: "#tutorialTrigger",
+          mobileSection: "review",
           title: "You can replay this tour anytime",
           text: "If you ever want a refresher, use this button. Mood and Motivation on the right also update automatically as your month fills in.",
         },
@@ -858,6 +898,7 @@
       let tutorialOpen = false;
       let currentStepIndex = 0;
       let restoreTab = "charts";
+      let restoreMobileSection = "track";
       let previousFocus = null;
 
       function getCurrentStep() {
@@ -930,6 +971,9 @@
         if (!tutorialOpen) return;
 
         const step = getCurrentStep();
+        if (step.mobileSection) {
+          window.__setMobileDashboardSection?.(step.mobileSection);
+        }
         if (step.tab) {
           window.__setDashboardTab?.(step.tab);
         }
@@ -958,6 +1002,9 @@
         document.removeEventListener("keydown", handleTutorialKeydown);
         if (restoreTab) {
           window.__setDashboardTab?.(restoreTab);
+        }
+        if (restoreMobileSection) {
+          window.__setMobileDashboardSection?.(restoreMobileSection);
         }
         if (previousFocus && typeof previousFocus.focus === "function") {
           previousFocus.focus();
@@ -1006,6 +1053,7 @@
         }
         previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
         restoreTab = window.__getActiveDashboardTab?.() || "charts";
+        restoreMobileSection = window.__getMobileDashboardSection?.() || "track";
         currentStepIndex = 0;
         tutorialOpen = true;
         overlay.hidden = false;

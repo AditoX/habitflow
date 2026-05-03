@@ -463,3 +463,207 @@ html, body {
     border-radius: 20px;
   }
 }
+
+/* Layout recovery + mobile section tabs */
+html,
+body {
+  height: auto;
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.page-shell {
+  min-height: 100vh;
+  height: auto;
+  overflow: visible;
+}
+
+.page-stack {
+  flex: none;
+  min-height: auto;
+  overflow: visible;
+  padding-bottom: 34px;
+}
+
+.tracker-shell {
+  overflow: visible;
+}
+
+.tracker-layout {
+  height: auto;
+  align-items: start;
+  overflow: visible;
+  grid-template-columns: minmax(228px, 260px) minmax(0, 1fr) 190px;
+}
+
+.left-rail,
+.main-rail,
+.right-rail {
+  height: auto;
+}
+
+.main-rail {
+  min-width: 0;
+  overflow: visible;
+}
+
+.left-rail,
+.right-rail {
+  position: sticky;
+  top: 84px;
+  align-self: start;
+  max-height: calc(100vh - 106px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.habits-panel .habit-list {
+  max-height: min(42vh, 520px);
+  overflow-y: auto;
+}
+
+.mobile-dashboard-nav {
+  display: none;
+}
+
+@media (max-width: 1500px) {
+  .tracker-layout {
+    grid-template-columns: minmax(228px, 252px) minmax(0, 1fr);
+  }
+
+  .right-rail {
+    position: static;
+    top: auto;
+    max-height: none;
+    overflow: visible;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .right-rail-panel {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 1220px) {
+  .tracker-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .left-rail,
+  .right-rail {
+    position: static;
+    top: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .right-rail {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .habits-panel .habit-list {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 900px) {
+  .mobile-dashboard-nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    padding: 14px 14px 0;
+    position: sticky;
+    top: 66px;
+    z-index: 8;
+    background: linear-gradient(180deg, rgba(11, 16, 24, 0.98), rgba(11, 16, 24, 0.88));
+    backdrop-filter: blur(18px);
+  }
+
+  .mobile-dashboard-tab {
+    min-height: 42px;
+    border-radius: 14px;
+    border: 1px solid rgba(151, 164, 186, 0.14);
+    background: rgba(18, 25, 38, 0.82);
+    color: rgba(183, 196, 216, 0.76);
+    font-family: "Sora", sans-serif;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: border-color 180ms ease, background 180ms ease, color 180ms ease, transform 180ms ease;
+  }
+
+  .mobile-dashboard-tab:active {
+    transform: translateY(1px);
+  }
+
+  .mobile-dashboard-tab--active {
+    border-color: rgba(143, 184, 162, 0.34);
+    background: linear-gradient(180deg, rgba(38, 53, 71, 0.96), rgba(25, 37, 53, 0.92));
+    color: #edf2f7;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .tracker-layout {
+    display: block;
+    padding: 12px;
+  }
+
+  .left-rail,
+  .main-rail,
+  .right-rail {
+    display: none;
+    position: static;
+    top: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  #dashboard[data-mobile-section="track"] .left-rail,
+  #dashboard[data-mobile-section="track"] .main-rail,
+  #dashboard[data-mobile-section="review"] .main-rail,
+  #dashboard[data-mobile-section="review"] .right-rail,
+  #dashboard[data-mobile-section="habits"] .left-rail,
+  #dashboard[data-mobile-section="settings"] .left-rail {
+    display: grid;
+  }
+
+  #dashboard[data-mobile-section="track"] .left-rail > :not(.hero-panel),
+  #dashboard[data-mobile-section="track"] .main-rail > :not(.primary-panel),
+  #dashboard[data-mobile-section="review"] .main-rail > :not(.tabs-panel),
+  #dashboard[data-mobile-section="habits"] .left-rail > :not(.habits-panel),
+  #dashboard[data-mobile-section="settings"] .left-rail > :not(.settings-panel) {
+    display: none;
+  }
+
+  #dashboard[data-mobile-section="review"] .right-rail {
+    grid-template-columns: 1fr;
+    margin-top: 12px;
+  }
+
+  #dashboard[data-mobile-section="habits"] .habits-panel .habit-list,
+  #dashboard[data-mobile-section="settings"] .habits-panel .habit-list {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 640px) {
+  .mobile-dashboard-nav {
+    top: 56px;
+    padding: 12px 12px 0;
+    gap: 6px;
+  }
+
+  .mobile-dashboard-tab {
+    min-height: 40px;
+    border-radius: 12px;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+  }
+}
