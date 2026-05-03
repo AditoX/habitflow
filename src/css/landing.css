@@ -1,12 +1,12 @@
 :root {
-  --bg: #080c12;
-  --panel: rgba(14, 20, 32, 0.92);
-  --line: rgba(151, 164, 186, 0.12);
-  --text: #edf2f7;
-  --muted: #7a8899;
-  --accent: #8ea2bd;
-  --accent-warm: #c6a27d;
-  --success: #7fb89e;
+  --bg: #0A0A0B;
+  --panel: rgba(20, 20, 22, 0.6);
+  --line: rgba(255, 255, 255, 0.08);
+  --text: #F8F9FA;
+  --muted: #A1A1AA;
+  --accent: #38BDF8;
+  --accent-warm: #818CF8;
+  --success: #34D399;
   --radius-lg: 24px;
   --radius-xl: 32px;
 }
@@ -24,7 +24,7 @@ html {
 }
 
 body {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Inter", sans-serif;
   background: var(--bg);
   color: var(--text);
   overflow-x: hidden;
@@ -66,11 +66,11 @@ button {
 }
 
 .nav-logo {
-  font-family: "Sora", sans-serif;
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-family: "Outfit", sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
   color: var(--text);
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
 
 .nav-links {
@@ -132,7 +132,7 @@ button {
   height: 600px;
   top: -100px;
   left: -100px;
-  background: radial-gradient(circle, rgba(142, 162, 189, 0.3), transparent 70%);
+  background: radial-gradient(circle, rgba(129, 140, 248, 0.25), transparent 70%);
   animation: floatOrb 12s ease-in-out infinite;
 }
 
@@ -141,7 +141,7 @@ button {
   height: 500px;
   bottom: 0;
   right: -80px;
-  background: radial-gradient(circle, rgba(198, 162, 125, 0.25), transparent 70%);
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.25), transparent 70%);
   animation: floatOrb 15s ease-in-out infinite reverse;
 }
 
@@ -208,17 +208,17 @@ button {
 }
 
 .hero-h1 {
-  font-family: "Sora", sans-serif;
-  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-family: "Outfit", sans-serif;
+  font-size: clamp(3.5rem, 6vw, 6rem);
   font-weight: 800;
-  line-height: 0.94;
-  letter-spacing: -0.05em;
+  line-height: 1;
+  letter-spacing: -0.04em;
   margin-bottom: 24px;
 }
 
 .hero-h1 em {
   font-style: normal;
-  background: linear-gradient(135deg, #8ea2bd, #c6a27d, #8ea2bd);
+  background: linear-gradient(135deg, #38BDF8, #818CF8, #38BDF8);
   background-size: 200% auto;
   animation: textShine 4s linear infinite;
   -webkit-background-clip: text;
@@ -284,8 +284,8 @@ button {
 }
 
 .btn-primary {
-  background: var(--text);
-  color: #080c12;
+  background: linear-gradient(135deg, var(--text) 0%, #D1D5DB 100%);
+  color: #0A0A0B;
   border-radius: 999px;
   padding: 14px 28px;
   font-weight: 700;
@@ -293,12 +293,13 @@ button {
   transition: transform 200ms, box-shadow 200ms;
   border: none;
   display: inline-block;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
-  color: #080c12;
+  box-shadow: 0 16px 40px rgba(255, 255, 255, 0.2);
+  color: #0A0A0B;
 }
 
 .btn-ghost {
@@ -334,9 +335,9 @@ button {
 
 .stat strong {
   display: block;
-  font-family: "Sora", sans-serif;
-  font-size: 1.6rem;
-  font-weight: 700;
+  font-family: "Outfit", sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
 }
 
 .stat span {
@@ -484,9 +485,9 @@ button {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-family: "Sora", sans-serif;
+  font-family: "Outfit", sans-serif;
   font-size: 0.82rem;
-  font-weight: 700;
+  font-weight: 800;
   background: conic-gradient(var(--success) 0deg 259deg, rgba(151, 164, 186, 0.15) 259deg 360deg);
   position: relative;
 }
@@ -524,7 +525,8 @@ button {
 }
 
 .section-tag {
-  font-family: "Sora", sans-serif;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   font-size: 0.76rem;
@@ -533,10 +535,10 @@ button {
 }
 
 .section-h2 {
-  font-family: "Sora", sans-serif;
-  font-size: clamp(2rem, 4vw, 3.2rem);
-  font-weight: 700;
-  letter-spacing: -0.04em;
+  font-family: "Outfit", sans-serif;
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
   margin-bottom: 48px;
 }
 
@@ -547,7 +549,8 @@ button {
 }
 
 .feature-card {
-  background: rgba(14, 20, 32, 0.7);
+  background: var(--panel);
+  backdrop-filter: blur(16px);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   padding: 28px;
@@ -563,7 +566,7 @@ button {
   left: -100%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
   transform: skewX(-20deg);
   transition: left 0.7s ease;
 }
@@ -573,9 +576,9 @@ button {
 }
 
 .feature-card:hover {
-  border-color: rgba(110, 231, 183, 0.3);
+  border-color: rgba(56, 189, 248, 0.4);
   transform: translateY(-6px) scale(1.02);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(110, 231, 183, 0.05);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(56, 189, 248, 0.1);
 }
 
 .fc-wide {
@@ -589,9 +592,9 @@ button {
 }
 
 .feature-card h3 {
-  font-family: "Sora", sans-serif;
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-family: "Outfit", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
   margin-bottom: 10px;
   letter-spacing: -0.02em;
 }
@@ -611,7 +614,8 @@ button {
 
 .step {
   flex: 1;
-  background: rgba(14, 20, 32, 0.7);
+  background: var(--panel);
+  backdrop-filter: blur(16px);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   padding: 32px 28px;
@@ -620,8 +624,8 @@ button {
 
 .step:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-  border-color: rgba(198, 162, 125, 0.3);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  border-color: rgba(129, 140, 248, 0.4);
 }
 
 .step-arrow {
@@ -639,20 +643,21 @@ button {
 
 .step-num {
   display: inline-block;
-  font-family: "Sora", sans-serif;
-  font-size: 0.72rem;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
   color: var(--accent-warm);
   letter-spacing: 0.1em;
   margin-bottom: 14px;
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(198, 162, 125, 0.1);
+  background: rgba(129, 140, 248, 0.15);
 }
 
 .step h3 {
-  font-family: "Sora", sans-serif;
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-family: "Outfit", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
   margin-bottom: 10px;
   letter-spacing: -0.02em;
 }
@@ -685,9 +690,9 @@ button {
 }
 
 .cta-inner h2 {
-  font-family: "Sora", sans-serif;
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 700;
+  font-family: "Outfit", sans-serif;
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 800;
   letter-spacing: -0.04em;
   margin-bottom: 32px;
 }
@@ -709,9 +714,9 @@ button {
 }
 
 .footer-logo {
-  font-family: "Sora", sans-serif;
-  font-weight: 700;
-  font-size: 1rem;
+  font-family: "Outfit", sans-serif;
+  font-weight: 800;
+  font-size: 1.1rem;
   color: var(--text);
 }
 
