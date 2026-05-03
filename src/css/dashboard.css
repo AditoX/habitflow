@@ -765,3 +765,37 @@ body {
   color: #f6f4ef;
   box-shadow: none;
 }
+
+/* Grey dashboard refinement */
+.dash-nav {
+  background:
+    linear-gradient(180deg, rgba(225, 220, 213, 0.98), rgba(214, 208, 200, 0.94)),
+    rgba(219, 213, 206, 0.96);
+  border-bottom-color: rgba(17, 17, 17, 0.12);
+}
+
+.tracker-shell {
+  border-color: rgba(17, 17, 17, 0.14);
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.22), transparent 18%),
+    linear-gradient(180deg, rgba(219, 214, 207, 0.98), rgba(205, 199, 191, 0.96));
+  box-shadow: 0 28px 60px rgba(17, 17, 17, 0.07);
+}
+
+.right-rail-panel {
+  background:
+    linear-gradient(180deg, rgba(236, 232, 226, 0.98), rgba(220, 215, 207, 0.96)),
+    rgba(228, 222, 214, 0.96);
+  border-color: rgba(17, 17, 17, 0.14);
+  box-shadow: 0 10px 22px rgba(17, 17, 17, 0.05);
+}
+
+.mobile-dashboard-nav {
+  background: linear-gradient(180deg, rgba(220, 214, 206, 0.98), rgba(209, 203, 194, 0.9));
+}
+
+.mobile-dashboard-tab {
+  border-color: rgba(17, 17, 17, 0.14);
+  background: rgba(234, 229, 222, 0.9);
+  color: rgba(17, 17, 17, 0.7);
+}
