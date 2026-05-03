@@ -58,6 +58,7 @@ const goalCompleted     = document.getElementById("goalCompleted");
 const goalLeft          = document.getElementById("goalLeft");
 const completionPercent = document.getElementById("completionPercent");
 const donutChart        = document.getElementById("donutChart");
+const donutPercent      = document.getElementById("donutPercent");
 const moodValue         = document.getElementById("moodValue");
 const motivationValue   = document.getElementById("motivationValue");
 const heroConsistency   = document.getElementById("heroConsistency");
@@ -375,6 +376,9 @@ function render() {
   const completed = dailyTotals.reduce((s, v) => s + v, 0);
   const left = totalTarget - completed;
   const percent = totalTarget === 0 ? 0 : Math.round((completed / totalTarget) * 100);
+  const trackedDayCount = getTrackedDayCount(days);
+  const trackedDailyTotals = dailyTotals.slice(0, trackedDayCount);
+  const moodScore = average(trackedDailyTotals, habits.length);
 
   monthHeading.textContent = months[state.month];
   yearHeading.textContent = state.year;
@@ -398,10 +402,12 @@ function render() {
   goalLeft.textContent = left;
   completionPercent.textContent = `${percent}%`;
   donutChart.style.setProperty("--angle", `${Math.round((percent / 100) * 360)}deg`);
-  dailyAverageLabel.textContent = `${Math.round(average(dailyTotals, habits.length) * 100)}% avg`;
+  if (donutPercent) {
+    donutPercent.textContent = `${percent}%`;
+  }
+  dailyAverageLabel.textContent = `${Math.round(moodScore * 100)}% avg`;
   bestWeekLabel.textContent = `Week ${bestWeekIndex(weeklyTotals) + 1}`;
 
-  const moodScore = average(dailyTotals, habits.length);
   moodValue.textContent = moodDescriptor(moodScore);
   motivationValue.textContent = `${Math.round(moodScore * 100)}%`;
 
@@ -1086,6 +1092,16 @@ function defaultMobileWeekIndex(maxWeekIndex) {
 function average(list, habitCount) {
   if (list.length === 0 || habitCount === 0) return 0;
   return list.reduce((s, v) => s + v / habitCount, 0) / list.length;
+}
+
+function getTrackedDayCount(totalDays) {
+  const today = new Date();
+  const viewedMonthStart = new Date(state.year, state.month, 1);
+  const currentMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+
+  if (viewedMonthStart < currentMonthStart) return totalDays;
+  if (viewedMonthStart > currentMonthStart) return 0;
+  return Math.min(totalDays, today.getDate());
 }
 
 function isCellLocked(checked, dayIndex) {
