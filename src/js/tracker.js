@@ -27,6 +27,7 @@ const habitPalette = [
 
 const storagePrefix = "habit-tracker-dashboard";
 const storageVersion = "v3-clean"; // bump this to force a reset
+const recentBackfillDays = 7;
 
 const state = {
   month: 0,
@@ -1105,14 +1106,20 @@ function getTrackedDayCount(totalDays) {
 }
 
 function isCellLocked(checked, dayIndex) {
-  return !checked && isPastDayInViewedMonth(dayIndex);
+  if (checked) return false;
+  return getDaysAgoInViewedMonth(dayIndex) > recentBackfillDays;
 }
 
 function isPastDayInViewedMonth(dayIndex) {
+  return getDaysAgoInViewedMonth(dayIndex) > 0;
+}
+
+function getDaysAgoInViewedMonth(dayIndex) {
   const today = new Date();
   const viewedDate = new Date(state.year, state.month, dayIndex + 1);
   const currentDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  return viewedDate < currentDay;
+  const viewedDay = new Date(viewedDate.getFullYear(), viewedDate.getMonth(), viewedDate.getDate());
+  return Math.round((currentDay - viewedDay) / 86400000);
 }
 
 function bestWeekIndex(weeklyTotals) { return weeklyTotals.indexOf(Math.max(...weeklyTotals)); }
