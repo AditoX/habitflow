@@ -127,7 +127,7 @@ function bindEvents() {
     });
   }
 
-  addHabitButton.addEventListener("click", () => addHabit());
+  if (addHabitButton) addHabitButton.addEventListener("click", () => addHabit());
 }
 
 function getTrackerStorage() {
@@ -269,6 +269,7 @@ function ensureMonthData() {
 
 // ── Habit list (left rail) ────────────────────────────────────────────────────
 function renderHabitList() {
+  if (!habitList) return;
   habitList.innerHTML = currentHabits()
     .map((h) => `
       <div class="habit-row habit-row--draggable" data-drag-habit-id="${escapeAttribute(h.id)}">

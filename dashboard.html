@@ -599,7 +599,6 @@
         <div class="mobile-dashboard-nav" id="mobileDashboardNav" aria-label="Dashboard mobile sections">
           <button class="mobile-dashboard-tab mobile-dashboard-tab--active" type="button" data-mobile-section="track">Track</button>
           <button class="mobile-dashboard-tab" type="button" data-mobile-section="review">Review</button>
-          <button class="mobile-dashboard-tab" type="button" data-mobile-section="habits">Habits</button>
           <button class="mobile-dashboard-tab" type="button" data-mobile-section="settings">Settings</button>
         </div>
         <section class="tracker-layout">
@@ -611,19 +610,6 @@
               <div class="hero-meta">
                 <span>Consistency system</span>
                 <span>Built for focus</span>
-              </div>
-              <div class="xp-card" aria-label="Your HabitFlow progress">
-                <div class="xp-card__topline">
-                  <span class="xp-level" id="xpLevel">Level 1</span>
-                  <span class="xp-total" id="xpTotal">0 XP</span>
-                </div>
-                <div class="xp-progress" role="progressbar" aria-label="Progress to next level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                  <span class="xp-progress__fill" id="xpProgressFill"></span>
-                </div>
-                <div class="xp-card__footer">
-                  <span id="xpProgressText">0 XP to Level 2</span>
-                  <span id="xpStreak">⚡ Start your streak</span>
-                </div>
               </div>
             </div>
 
@@ -639,10 +625,21 @@
               </label>
             </div>
 
-            <div class="panel habits-panel">
-              <div class="panel-title">My Habits</div>
-              <div class="habit-list" id="habitList"></div>
-              <button class="subtle-btn add-habit-btn" id="addHabitButton" type="button">Add habit</button>
+            <div class="panel xp-panel" aria-label="Your HabitFlow progress">
+              <div class="panel-title">Your Progress</div>
+              <div class="xp-card">
+                <div class="xp-card__topline">
+                  <span class="xp-level" id="xpLevel">Level 1</span>
+                  <span class="xp-total" id="xpTotal">0 XP</span>
+                </div>
+                <div class="xp-progress" role="progressbar" aria-label="Progress to next level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                  <span class="xp-progress__fill" id="xpProgressFill"></span>
+                </div>
+                <div class="xp-card__footer">
+                  <span id="xpProgressText">0 XP to Level 2</span>
+                  <span id="xpStreak">⚡ Start your streak</span>
+                </div>
+              </div>
             </div>
 
           </aside>
@@ -1223,12 +1220,6 @@
           mobileSection: "track",
           title: "This is your daily check-in board",
           text: "The calendar is the heart of Habitflow. Mark the habits you completed today, or backfill the last 7 days, and your stats update instantly.",
-        },
-        {
-          selector: ".habits-panel",
-          mobileSection: "habits",
-          title: "Start with your habit list",
-          text: "Your default habits live here. You can add new ones, edit targets, delete old ones, or drag to reorder them whenever your routine changes.",
         },
         {
           selector: "#calendarGrid input[type='checkbox']:not([disabled]), #calendarGrid",

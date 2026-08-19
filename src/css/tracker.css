@@ -205,7 +205,8 @@ a {
 }
 
 /* Personal XP and level progression */
-.xp-card { margin-top: 18px; padding: 14px; border: 1px solid rgba(143, 184, 162, 0.28); border-radius: 16px; background: linear-gradient(135deg, rgba(143, 184, 162, 0.16), rgba(142, 162, 189, 0.12)); }
+.xp-panel { padding: 16px 18px; }
+.xp-card { padding: 16px; border: 1px solid rgba(143, 184, 162, 0.28); border-radius: 16px; background: linear-gradient(135deg, rgba(143, 184, 162, 0.16), rgba(142, 162, 189, 0.12)); }
 .xp-card__topline, .xp-card__footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .xp-level { font-family: "Sora", sans-serif; font-size: 0.86rem; font-weight: 700; color: var(--text); }
 .xp-total { font-size: 0.8rem; font-weight: 700; color: var(--accent-strong); }
