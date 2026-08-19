@@ -1113,10 +1113,11 @@ body.habit-reorder-active .calendar-label-editable[data-drag-habit-id] {
 
 .mood-cell i {
   display: block;
-  width: 60%;
+  width: 82%;
+  min-height: 10px;
   border-radius: 999px;
   background: linear-gradient(180deg, var(--accent-strong), var(--success));
-  box-shadow: 0 0 14px rgba(151, 164, 186, 0.12);
+  box-shadow: 0 0 14px rgba(151, 164, 186, 0.2);
 }
 
 .mood-cell span {
