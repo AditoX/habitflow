@@ -31,6 +31,38 @@ service cloud.firestore {
       allow create, update: if isOwner(userId) && hasAllowedUserKeys() && hasValidUserDocShape();
     }
 
+    // Leaderboard: anyone signed in can read (public leaderboard).
+    // No Cloud Functions / Blaze plan needed — anti-cheat is enforced
+    // entirely by these rules instead of a trusted server:
+    //   - only the doc owner can write their own entry
+    //   - at most one write per ~20 hours (the actual day-lock enforcement)
+    //   - xp can only grow by a small capped amount per write
+    //   - streak can only grow by +1 per write
+    // This is less airtight than server-side computation, but requires
+    // zero billing and stops casual/obvious cheating.
+    match /leaderboard/{userId} {
+      allow read: if isSignedIn();
+
+      allow create: if isOwner(userId)
+        && request.resource.data.keys().hasOnly(["displayName", "xp", "currentStreak", "updatedAt"])
+        && request.resource.data.displayName is string
+        && request.resource.data.xp is int && request.resource.data.xp >= 0
+        && request.resource.data.currentStreak is int
+        && request.resource.data.currentStreak >= 0 && request.resource.data.currentStreak <= 3650
+        && request.resource.data.updatedAt == request.time;
+
+      allow update: if isOwner(userId)
+        && request.resource.data.keys().hasOnly(["displayName", "xp", "currentStreak", "updatedAt"])
+        && request.resource.data.displayName is string
+        && request.resource.data.xp is int
+        && request.resource.data.xp >= resource.data.xp
+        && request.resource.data.xp <= resource.data.xp + 15
+        && request.resource.data.currentStreak is int
+        && request.resource.data.currentStreak <= resource.data.currentStreak + 1
+        && request.resource.data.updatedAt == request.time
+        && request.time > resource.data.updatedAt + duration.value(20, "h");
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

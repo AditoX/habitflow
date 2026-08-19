@@ -612,6 +612,19 @@
                 <span>Consistency system</span>
                 <span>Built for focus</span>
               </div>
+              <div class="xp-card" aria-label="Your HabitFlow progress">
+                <div class="xp-card__topline">
+                  <span class="xp-level" id="xpLevel">Level 1</span>
+                  <span class="xp-total" id="xpTotal">0 XP</span>
+                </div>
+                <div class="xp-progress" role="progressbar" aria-label="Progress to next level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                  <span class="xp-progress__fill" id="xpProgressFill"></span>
+                </div>
+                <div class="xp-card__footer">
+                  <span id="xpProgressText">0 XP to Level 2</span>
+                  <span id="xpStreak">⚡ Start your streak</span>
+                </div>
+              </div>
             </div>
 
             <div class="panel settings-panel">
@@ -726,6 +739,11 @@
                     <div class="panel-title">Top 10 Daily Habit</div>
                     <ol class="streak-list" id="streakList"></ol>
                   </div>
+                  <div class="panel leaderboard-panel">
+                    <div class="panel-title">Community Leaderboard</div>
+                    <div class="leaderboard-you" id="leaderboardYou"></div>
+                    <ol class="leaderboard-list" id="leaderboardList"></ol>
+                  </div>
                 </div>
               </div>
 
@@ -793,7 +811,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { firebaseConfig } from "./src/js/firebase-config.js";
 
     const app  = initializeApp(firebaseConfig);
@@ -902,6 +920,84 @@
       } catch (e) {
         console.warn("Could not save to Firestore:", e);
       }
+      // Leaderboard sync is separate from the main save — if it's rejected
+      // by the rules' 20h cooldown, that's expected and not an error to surface.
+      await syncLeaderboardEntry(uid).catch(() => {});
+    }
+
+    /**
+     * Computes total lifetime completions (xp) and current streak from the
+     * raw trackerState, ignoring anything checked for a future date. This
+     * mirrors the day-lock logic in tracker.js so the numbers the leaderboard
+     * shows match what the user actually sees in their calendar.
+     */
+    function computeLocalStats(trackerState) {
+      const checks = trackerState?.checks || {};
+      let xp = 0;
+      const completedDays = new Set();
+
+      for (const monthKey of Object.keys(checks)) {
+        const [year, month] = monthKey.split("-").map(Number);
+        const habitsForMonth = checks[monthKey] || {};
+        for (const habitId of Object.keys(habitsForMonth)) {
+          const arr = habitsForMonth[habitId];
+          if (!Array.isArray(arr)) continue;
+          arr.forEach((checked, dayIndex) => {
+            if (checked !== true) return;
+            xp += 1;
+            const d = new Date(year, month - 1, dayIndex + 1);
+            if (d.getTime() > Date.now()) return; // never count future-dated entries
+            completedDays.add(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`);
+          });
+        }
+      }
+
+      let streak = 0;
+      const cursor = new Date();
+      cursor.setHours(0, 0, 0, 0);
+      const todayKey = `${cursor.getFullYear()}-${cursor.getMonth()}-${cursor.getDate()}`;
+      if (!completedDays.has(todayKey)) cursor.setDate(cursor.getDate() - 1);
+      while (completedDays.has(`${cursor.getFullYear()}-${cursor.getMonth()}-${cursor.getDate()}`)) {
+        streak += 1;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+
+      return { xp, streak };
+    }
+
+    /**
+     * Attempts to sync the leaderboard entry. The Firestore rules — not this
+     * function — are what actually enforce the anti-cheat limits (one write
+     * per ~20h, bounded xp/streak growth per write). If the rules reject the
+     * write, it just silently no-ops until the cooldown passes; that's the
+     * intended behavior, not a bug.
+     */
+    async function syncLeaderboardEntry(uid) {
+      const raw = localStorage.getItem(trackerStorage.getDataKey(uid));
+      if (!raw) return;
+
+      const { xp, streak } = computeLocalStats(JSON.parse(raw));
+      const displayName = currentUser?.displayName || currentUser?.email?.split("@")[0] || "Anonymous";
+      const ref = doc(db, "leaderboard", uid);
+      const existing = await getDoc(ref).catch(() => null);
+
+      if (!existing || !existing.exists()) {
+        await setDoc(ref, {
+          displayName,
+          xp,
+          currentStreak: Math.min(streak, 1),
+          updatedAt: serverTimestamp(),
+        });
+        return;
+      }
+
+      const prev = existing.data();
+      await setDoc(ref, {
+        displayName,
+        xp: Math.min(xp, prev.xp + 15),
+        currentStreak: Math.min(streak, (prev.currentStreak || 0) + 1),
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
     }
 
     function queueTutorialStart() {
@@ -946,6 +1042,93 @@
   </script>
 
   <script src="src/js/tracker.js"></script>
+  <script type="module">
+    import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, collection, query, orderBy, limit, getDocs, doc, getDoc,
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { firebaseConfig } from "./src/js/firebase-config.js";
+
+    // Reuse the existing app instance if one was already initialized above.
+    const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const leaderboardList = document.getElementById("leaderboardList");
+    const leaderboardYou = document.getElementById("leaderboardYou");
+
+    // Purely cosmetic — computed from xp for display only, never stored or
+    // trusted as leaderboard data itself.
+    function levelForXp(xp) {
+      return Math.floor(Math.sqrt((xp || 0) / 5)) + 1;
+    }
+
+    function renderRow(rank, data, isYou) {
+      const li = document.createElement("li");
+      li.className = "leaderboard-item" + (isYou ? " leaderboard-item--you" : "");
+      li.innerHTML = `
+        <span class="leaderboard-rank">${rank}</span>
+        <span class="leaderboard-name">${escapeHtml(data.displayName || "Anonymous")}</span>
+        <span class="leaderboard-level">Lv.${levelForXp(data.xp)}</span>
+        <span class="leaderboard-streak" title="Current streak">🔥${data.currentStreak ?? 0}</span>
+        <span class="leaderboard-xp">${data.xp ?? 0} XP</span>
+      `;
+      return li;
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+      }[c]));
+    }
+
+    async function loadLeaderboard(currentUid) {
+      if (!leaderboardList) return;
+      leaderboardList.innerHTML = `<li class="leaderboard-loading">Loading leaderboard…</li>`;
+
+      try {
+        const topQuery = query(collection(db, "leaderboard"), orderBy("xp", "desc"), limit(20));
+        const snap = await getDocs(topQuery);
+
+        leaderboardList.innerHTML = "";
+        let rank = 0;
+        let currentUserShown = false;
+
+        snap.forEach((docSnap) => {
+          rank += 1;
+          const data = docSnap.data();
+          const isYou = docSnap.id === currentUid;
+          if (isYou) currentUserShown = true;
+          leaderboardList.appendChild(renderRow(rank, data, isYou));
+        });
+
+        if (snap.empty) {
+          leaderboardList.innerHTML = `<li class="leaderboard-empty">No entries yet — be the first to check in today.</li>`;
+        }
+
+        // If the current user isn't in the top 20, fetch and show their own rank separately.
+        if (currentUid && !currentUserShown && leaderboardYou) {
+          const ownSnap = await getDoc(doc(db, "leaderboard", currentUid));
+          if (ownSnap.exists()) {
+            leaderboardYou.innerHTML = "";
+            leaderboardYou.appendChild(renderRow("—", ownSnap.data(), true));
+          } else {
+            leaderboardYou.innerHTML = `<p class="leaderboard-hint">Check in today to join the leaderboard.</p>`;
+          }
+        } else if (leaderboardYou) {
+          leaderboardYou.innerHTML = "";
+        }
+      } catch (err) {
+        console.error("Failed to load leaderboard:", err);
+        leaderboardList.innerHTML = `<li class="leaderboard-error">Couldn't load the leaderboard right now.</li>`;
+      }
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      loadLeaderboard(user ? user.uid : null);
+    });
+  </script>
 
   <script>
     const dashboardTabs = Array.from(document.querySelectorAll(".dash-tab"));

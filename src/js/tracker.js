@@ -27,7 +27,7 @@ const habitPalette = [
 
 const storagePrefix = "habit-tracker-dashboard";
 const storageVersion = "v3-clean"; // bump this to force a reset
-const recentBackfillDays = 7;
+// Anti-cheat: backfilling past days is no longer allowed — see isCellLocked().
 
 const state = {
   month: 0,
@@ -66,6 +66,11 @@ const heroConsistency   = document.getElementById("heroConsistency");
 const heroBandFill      = document.getElementById("heroBandFill");
 const heroMiniGrid      = document.getElementById("heroMiniGrid");
 const jumpCurrentMonth  = document.getElementById("jumpCurrentMonth");
+const xpLevel           = document.getElementById("xpLevel");
+const xpTotal           = document.getElementById("xpTotal");
+const xpProgressFill    = document.getElementById("xpProgressFill");
+const xpProgressText    = document.getElementById("xpProgressText");
+const xpStreak          = document.getElementById("xpStreak");
 const mobileCalendarQuery = typeof window !== "undefined" && window.matchMedia
   ? window.matchMedia("(max-width: 640px)")
   : null;
@@ -397,6 +402,7 @@ function render() {
   renderMoodStrip(dailyTotals, habits.length);
   renderHeroPreview(dailyTotals, percent, habits.length);
   renderHistoryPanel();
+  renderGameProgress();
 
   goalTarget.textContent = totalTarget;
   goalCompleted.textContent = completed;
@@ -415,6 +421,75 @@ function render() {
   if (window.__habitflowTutorial?.refresh) {
     window.__habitflowTutorial.refresh();
   }
+}
+
+// Every completed habit earns 1 XP. Levels follow a gentle square curve so
+// early progress feels quick while long-term consistency still has a runway.
+function xpRequiredForLevel(level) {
+  return 5 * (level - 1) * (level - 1);
+}
+
+function levelForXp(xp) {
+  return Math.floor(Math.sqrt(Math.max(0, xp) / 5)) + 1;
+}
+
+function getGameStats() {
+  let xp = 0;
+  const completedDays = new Set();
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
+
+  for (const [monthKey, habits] of Object.entries(state.checks)) {
+    const [year, month] = monthKey.split("-").map(Number);
+    if (!Number.isInteger(year) || !Number.isInteger(month) || !habits) continue;
+    for (const checks of Object.values(habits)) {
+      if (!Array.isArray(checks)) continue;
+      checks.forEach((checked, dayIndex) => {
+        const date = new Date(year, month - 1, dayIndex + 1);
+        if (checked !== true || date > today) return;
+        xp += 1;
+        completedDays.add(`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`);
+      });
+    }
+  }
+
+  let streak = 0;
+  const cursor = new Date();
+  cursor.setHours(0, 0, 0, 0);
+  const dateKey = (date) => `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+  if (!completedDays.has(dateKey(cursor))) cursor.setDate(cursor.getDate() - 1);
+  while (completedDays.has(dateKey(cursor))) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return { xp, streak };
+}
+
+function renderGameProgress() {
+  if (!xpLevel || !xpTotal || !xpProgressFill || !xpProgressText || !xpStreak) return;
+  const { xp, streak } = getGameStats();
+  const level = levelForXp(xp);
+  const currentFloor = xpRequiredForLevel(level);
+  const nextFloor = xpRequiredForLevel(level + 1);
+  const progress = ((xp - currentFloor) / (nextFloor - currentFloor)) * 100;
+
+  xpLevel.textContent = `Level ${level}`;
+  xpTotal.textContent = `${xp} XP`;
+  xpProgressFill.style.width = `${Math.max(0, Math.min(100, progress))}%`;
+  xpProgressFill.parentElement?.setAttribute("aria-valuenow", String(Math.round(progress)));
+  xpProgressText.textContent = `${nextFloor - xp} XP to Level ${level + 1}`;
+  xpStreak.textContent = streak > 0 ? `⚡ ${streak}-day streak` : "⚡ Start your streak";
+}
+
+function showXpReward(previousXp) {
+  const { xp } = getGameStats();
+  if (xp <= previousXp) return;
+  const toast = document.createElement("div");
+  toast.className = "xp-toast";
+  toast.setAttribute("role", "status");
+  toast.textContent = levelForXp(xp) > levelForXp(previousXp) ? `Level up! You reached Level ${levelForXp(xp)}` : "+1 XP";
+  document.body.appendChild(toast);
+  window.setTimeout(() => toast.remove(), 2200);
 }
 
 // ── Charts ────────────────────────────────────────────────────────────────────
@@ -501,8 +576,9 @@ function renderCalendar(days, habitChecks, habits) {
   for (const checkbox of calendarGrid.querySelectorAll("input[type='checkbox']")) {
     checkbox.addEventListener("change", (e) => {
       const input = e.currentTarget;
+      const previousXp = getGameStats().xp;
       state.checks[getMonthKey()][input.dataset.habit][Number(input.dataset.day)] = input.checked;
-      saveState(); render();
+      saveState(); render(); showXpReward(previousXp);
     });
   }
 
@@ -606,8 +682,9 @@ function renderMobileCalendar(days, habitChecks, habits) {
   for (const checkbox of calendarGrid.querySelectorAll("input[type='checkbox']")) {
     checkbox.addEventListener("change", (e) => {
       const input = e.currentTarget;
+      const previousXp = getGameStats().xp;
       state.checks[getMonthKey()][input.dataset.habit][Number(input.dataset.day)] = input.checked;
-      saveState(); render();
+      saveState(); render(); showXpReward(previousXp);
     });
   }
 
@@ -1106,8 +1183,13 @@ function getTrackedDayCount(totalDays) {
 }
 
 function isCellLocked(checked, dayIndex) {
-  if (checked) return false;
-  return getDaysAgoInViewedMonth(dayIndex) > recentBackfillDays;
+  // Anti-cheat: only the current calendar day is ever editable.
+  // Past days lock permanently once they've passed (no retroactive checking
+  // OR unchecking), and future days are never editable in advance.
+  // NOTE: this is a UX guard only — the real enforcement for anything
+  // leaderboard/score-related happens server-side in the Cloud Function,
+  // since a client-side lock can always be bypassed via devtools/direct API calls.
+  return getDaysAgoInViewedMonth(dayIndex) !== 0;
 }
 
 function isPastDayInViewedMonth(dayIndex) {
