@@ -71,6 +71,8 @@ const xpTotal           = document.getElementById("xpTotal");
 const xpProgressFill    = document.getElementById("xpProgressFill");
 const xpProgressText    = document.getElementById("xpProgressText");
 const xpStreak          = document.getElementById("xpStreak");
+const dailyMissionList  = document.getElementById("dailyMissionList");
+const dailyMissionSubtitle = document.getElementById("dailyMissionSubtitle");
 const mobileCalendarQuery = typeof window !== "undefined" && window.matchMedia
   ? window.matchMedia("(max-width: 640px)")
   : null;
@@ -398,6 +400,7 @@ function render() {
   renderDailyChart(dailyTotals, habits.length);
   renderWeeklyChart(weeklyTotals, habits.length);
   renderCalendar(days, habitChecks, habits);
+  renderDailyMission(habitChecks, habits);
   renderAnalysis(days, habitChecks, habits);
   renderTopHabits(habitChecks, habits);
   renderMoodStrip(dailyTotals, habits.length);
@@ -421,6 +424,39 @@ function render() {
 
   if (window.__habitflowTutorial?.refresh) {
     window.__habitflowTutorial.refresh();
+  }
+}
+
+function renderDailyMission(habitChecks, habits) {
+  if (!dailyMissionList) return;
+  const today = new Date();
+  const isCurrentMonth = state.year === today.getFullYear() && state.month === today.getMonth();
+  const dayIndex = isCurrentMonth ? today.getDate() - 1 : 0;
+  const dateLabel = new Date(state.year, state.month, dayIndex + 1)
+    .toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+  const completed = habits.filter((habit) => habitChecks[habit.id]?.[dayIndex]).length;
+
+  if (dailyMissionSubtitle) {
+    dailyMissionSubtitle.textContent = isCurrentMonth
+      ? `${dateLabel} · ${completed}/${habits.length} habits cleared`
+      : `${dateLabel} · Open the current month to check in.`;
+  }
+
+  dailyMissionList.innerHTML = habits.map((habit) => {
+    const checked = Boolean(habitChecks[habit.id]?.[dayIndex]);
+    return `<button class="daily-mission ${checked ? "daily-mission--complete" : ""}" type="button" data-habit="${escapeAttribute(habit.id)}" ${isCurrentMonth ? "" : "disabled"}>
+      <span class="daily-mission-icon" style="--habit-color:${escapeAttribute(habit.color)}">${checked ? "✓" : ""}</span>
+      <span class="daily-mission-copy"><strong>${escapeHtml(habit.name)}</strong><small>${escapeHtml(habit.target)} · +1 XP</small></span>
+      <span class="daily-mission-check" aria-hidden="true">${checked ? "✓" : "+"}</span>
+    </button>`;
+  }).join("");
+
+  for (const button of dailyMissionList.querySelectorAll(".daily-mission")) {
+    button.addEventListener("click", () => {
+      const previousXp = getGameStats().xp;
+      state.checks[getMonthKey()][button.dataset.habit][dayIndex] = !state.checks[getMonthKey()][button.dataset.habit][dayIndex];
+      saveState(); render(); showXpReward(previousXp);
+    });
   }
 }
 

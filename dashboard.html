@@ -604,7 +604,7 @@
         <section class="tracker-layout">
           <aside class="left-rail">
             <div class="panel hero-panel">
-              <p class="panel-kicker">Habit Tracker</p>
+              <p class="panel-kicker">Habitflow operator</p>
               <h2 id="monthHeading">January</h2>
               <p class="hero-year" id="yearHeading">2026</p>
               <div class="hero-meta">
@@ -650,8 +650,9 @@
             <div class="panel grid-panel primary-panel">
               <div class="primary-panel-header">
                 <div>
-                  <p class="panel-kicker">Track today or backfill the last 7 days</p>
-                  <h2 class="primary-heading">This Month</h2>
+                  <p class="panel-kicker">Daily mission</p>
+                  <h2 class="primary-heading">Today</h2>
+                  <p class="daily-mission-subtitle" id="dailyMissionSubtitle">Complete your habits to earn XP.</p>
                 </div>
                 <div class="quick-stats">
                   <div class="qs-item">
@@ -670,19 +671,28 @@
                   </div>
                 </div>
               </div>
-              <div class="calendar-grid" id="calendarGrid"></div>
+              <div class="daily-mission-list" id="dailyMissionList"></div>
             </div>
 
             <!-- Secondary content behind tabs -->
             <div class="panel tabs-panel">
               <nav class="dash-tabs" role="tablist" aria-label="Dashboard sections">
-                <button class="dash-tab dash-tab--active" role="tab" aria-selected="true"  aria-controls="tab-charts"   id="tbtn-charts">Progress</button>
+                <button class="dash-tab dash-tab--active" role="tab" aria-selected="true" aria-controls="tab-calendar" id="tbtn-calendar">Calendar</button>
+                <button class="dash-tab" role="tab" aria-selected="false" aria-controls="tab-charts" id="tbtn-charts">Progress</button>
                 <button class="dash-tab"                  role="tab" aria-selected="false" aria-controls="tab-analysis" id="tbtn-analysis">Analysis</button>
                 <button class="dash-tab"                  role="tab" aria-selected="false" aria-controls="tab-history"  id="tbtn-history">History</button>
                 <button class="dash-tab"                  role="tab" aria-selected="false" aria-controls="tab-journal"  id="tbtn-journal">Journal</button>
               </nav>
 
-              <div class="tab-pane tab-pane--active" id="tab-charts" role="tabpanel" aria-labelledby="tbtn-charts">
+              <div class="tab-pane tab-pane--active" id="tab-calendar" role="tabpanel" aria-labelledby="tbtn-calendar">
+                <div class="calendar-tab-header">
+                  <div><p class="panel-kicker">Full view</p><h2>Monthly Tracker</h2></div>
+                  <button class="subtle-btn" id="addHabitButton" type="button">+ Add habit</button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+              </div>
+
+              <div class="tab-pane" id="tab-charts" role="tabpanel" aria-labelledby="tbtn-charts" hidden>
                 <div class="tab-charts-grid">
                   <div class="panel chart-panel">
                     <div class="panel-header">
